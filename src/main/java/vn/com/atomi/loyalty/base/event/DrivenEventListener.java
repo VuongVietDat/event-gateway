@@ -1,6 +1,5 @@
 package vn.com.atomi.loyalty.base.event;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -12,9 +11,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.web.multipart.MultipartFile;
 import vn.com.atomi.loyalty.base.exception.BaseException;
-import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionFile;
 
 /**
  * @author haidv
@@ -56,7 +53,7 @@ public abstract class DrivenEventListener {
 
   private void routerEventHandle(EventInfo eventInfo) {
     var event = eventInfo.getEvent();
-     if (event == null) {
+    if (event == null) {
       LOGGER.warn("The event to be handled was not found");
       return;
     }
@@ -106,5 +103,4 @@ public abstract class DrivenEventListener {
       invokeHandleMethod(index + 1, totalNumberExec, m, obj, eventInfo);
     }
   }
-
 }
