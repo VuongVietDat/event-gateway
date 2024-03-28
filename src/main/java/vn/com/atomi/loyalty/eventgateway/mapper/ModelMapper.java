@@ -3,7 +3,9 @@ package vn.com.atomi.loyalty.eventgateway.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.mapstruct.*;
+import vn.com.atomi.loyalty.eventgateway.dto.input.CardTransactionInfoInput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.*;
+import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
 import vn.com.atomi.loyalty.eventgateway.enums.ApprovalStatus;
 
 /**
@@ -40,4 +42,5 @@ public interface ModelMapper {
     }
     return null;
   }
+
 }

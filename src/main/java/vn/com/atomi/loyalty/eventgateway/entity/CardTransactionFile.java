@@ -25,4 +25,9 @@ public class CardTransactionFile extends BaseEntity {
       sequenceName = "EG_CARD_TRANS_FILE_ID_SEQ",
       allocationSize = 1)
   private Long id;
+  @Column(name = "STATUS_CARD")
+  private String statusCard;
+  @Column(name = "NAME")
+  private String name;
+
 }
