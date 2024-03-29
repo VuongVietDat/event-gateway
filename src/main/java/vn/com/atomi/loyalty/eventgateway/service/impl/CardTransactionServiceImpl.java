@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
@@ -40,6 +41,7 @@ import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionFileRep
 import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionInfoRepository;
 import vn.com.atomi.loyalty.eventgateway.repository.redis.CustomRepository;
 import vn.com.atomi.loyalty.eventgateway.service.CardTransactionService;
+import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 @Slf4j
 @Service
@@ -72,7 +74,6 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
             try {
               List<CardTransactionInfo> batch = new ArrayList<>();
               int batchSize = 100;
-              int count = 0;
               ReadableWorkbook workbook = null;
               try {
                 workbook = new ReadableWorkbook(pair.getRight());
@@ -88,11 +89,11 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
               for (int i = 1; i < n; i++) {
                 card.add(createEntitiesFromRows(mapIndex,
                     rows.get(i)));
+                if (card.size() == batchSize || i == n - 1) {
+                  customRepository.saveAllCardTransactionInfos(card);
+                  card.clear();
+                }
               }
-              System.out.println("card " + card.size());
-              //saves
-              customRepository.saveAllCardTransactionInfos(card);
-
               cardTransactionFile.setStatusCard(StatusCardTransaction.COMPLETE);
               cardTransactionFileRepository.save(cardTransactionFile);
               System.out.println("Complete");
@@ -166,7 +167,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
     columnIndexToFieldName.put("CARD_CATEGORY", "cardCategory");
     columnIndexToFieldName.put("HAN_MUC_THE", "cardLimit");
     columnIndexToFieldName.put("DVKD_PHAT_HANH", "issueOrganization");
-    columnIndexToFieldName.put("SO_DIEN_THOAI	SO_LUONG_GD", "phoneNumber");
+    columnIndexToFieldName.put("SO_DIEN_THOAI", "phoneNumber");
     columnIndexToFieldName.put("SO_LUONG_GD", "totalTransaction");
     columnIndexToFieldName.put("TONG_SO_TIEN_GD", "totalAmount");
     columnIndexToFieldName.put("NGHI NGỜ ĐÁO HẠN", "maturityDoubt");
@@ -214,6 +215,25 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
           cardTransactionInfo,
           super.modelMapper.getDetailCardTransactionInfo(cardTransactionInfo.getContent()));
     }
+    return null;
+  }
+
+  @Override
+  public ResponsePage<CardTransactionFileOutput> getListTransactionFile(Long id,
+      String startTransactionDate, String endTransactionDate, Long statusCard, Long createdBy,
+      Pageable pageable) {
+    var page =
+        cardTransactionFileRepository.getListCardTransactionFile(id,
+            Utils.reformatStringDate(
+                startTransactionDate,
+                DateConstant.STR_PLAN_DD_MM_YYYY_STROKE,
+                DateConstant.ISO_8601_EXTENDED_DATE_FORMAT_STROKE),
+            Utils.reformatStringDate(
+                endTransactionDate,
+                DateConstant.STR_PLAN_DD_MM_YYYY_STROKE,
+                DateConstant.ISO_8601_EXTENDED_DATE_FORMAT_STROKE), statusCard, createdBy,
+            pageable);
+//    return new ResponsePage<>(page, super.modelMapper.convertToCardTransactionInfoOutPut());
     return null;
   }
 
