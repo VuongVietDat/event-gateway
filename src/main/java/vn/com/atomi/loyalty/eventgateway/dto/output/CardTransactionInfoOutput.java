@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
 
 @Getter
 @Setter
 public class CardTransactionInfoOutput {
+
   @Schema(description = "Id bản ghi")
   @NotNull
   private Long id;
@@ -23,11 +25,11 @@ public class CardTransactionInfoOutput {
 
   @Schema(description = "Id thẻ")
   @NotBlank
-  private String builder;
+  private String cardId;
 
   @Schema(description = "Số thẻ")
   @NotBlank
-  private String cardId;
+  private String cardNumber;
 
   @Schema(description = "Mã sản phẩm")
   @NotBlank
@@ -71,4 +73,5 @@ public class CardTransactionInfoOutput {
 
   @Schema(description = "Người tạo")
   private String creator;
+
 }

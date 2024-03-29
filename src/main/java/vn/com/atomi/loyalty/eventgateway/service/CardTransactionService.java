@@ -1,12 +1,21 @@
 package vn.com.atomi.loyalty.eventgateway.service;
 
+import jakarta.persistence.Id;
 import java.io.IOException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.eventgateway.dto.input.CardTransactionInfoInput;
+import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionFileOutput;
+import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionInfoOutput;
 
 public interface CardTransactionService {
 
-  Object uploadTransactionFile(MultipartFile transactionFile) throws IOException;
+  void uploadTransactionFile(MultipartFile transactionFile);
 
   void updateCardTransaction(CardTransactionInfoInput cardTransactionInfoInput);
+
+  CardTransactionFileOutput getDetailCardTransaction(Long id);
+
+  ResponsePage<CardTransactionInfoOutput> getDetailCardTransactionInfo(Long id, Pageable pageable);
 }

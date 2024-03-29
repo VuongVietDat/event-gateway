@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.eventgateway.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
+import vn.com.atomi.loyalty.eventgateway.enums.StatusCardTransaction;
 
 /**
  * @author haidv
@@ -26,7 +27,8 @@ public class CardTransactionFile extends BaseEntity {
       allocationSize = 1)
   private Long id;
   @Column(name = "STATUS_CARD")
-  private String statusCard;
+  @Enumerated(EnumType.STRING)
+  private StatusCardTransaction statusCard;
   @Column(name = "NAME")
   private String name;
 

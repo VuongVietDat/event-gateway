@@ -1,7 +1,8 @@
 package vn.com.atomi.loyalty.eventgateway.enums;
 
+
 public enum StatusCardTransaction {
-  INITIALIZING ,
+  INITIALIZING,
   INITIALIZE_ERROR,
   IN_PROGRESS,
   PROCESSING,
