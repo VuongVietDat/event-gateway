@@ -14,10 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MessageData<T> {
 
-  public static final String FINISH_TASK = "FINISH_TASK";
-
-  public static final String START_WORKFLOW = "START_WORKFLOW";
-
   private String messageId;
   private String subject;
   private List<T> contents;
