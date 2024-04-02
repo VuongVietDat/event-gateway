@@ -3,8 +3,6 @@ package vn.com.atomi.loyalty.eventgateway.event;
 import java.util.LinkedHashMap;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.ThreadContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -14,10 +12,8 @@ import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.event.BaseRetriesMessageListener;
 import vn.com.atomi.loyalty.base.event.MessageData;
-import vn.com.atomi.loyalty.base.event.MessageInterceptor;
 import vn.com.atomi.loyalty.base.event.RetriesMessageData;
 import vn.com.atomi.loyalty.base.redis.HistoryMessage;
-import vn.com.atomi.loyalty.base.redis.HistoryMessageRepository;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
 import vn.com.atomi.loyalty.eventgateway.dto.message.Lv24HTransactionMessage;
 import vn.com.atomi.loyalty.eventgateway.utils.Utils;
@@ -31,12 +27,6 @@ import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 @Component
 public class Lv24HTransactionEventListenerBaseRetries
     extends BaseRetriesMessageListener<LinkedHashMap> {
-
-  protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-
-  private final MessageInterceptor messageInterceptor;
-
-  private final HistoryMessageRepository historyMessageRepository;
 
   @RabbitListener(queues = "${custom.properties.rabbitmq.queue.lv24h-transaction-event.name}")
   public void lv24hTransactionEvent(
@@ -57,7 +47,7 @@ public class Lv24HTransactionEventListenerBaseRetries
         String.format("%s_%s_%s", queue, timestamp, input.getTransactionHeader().getTransCode());
     try {
       if (Boolean.FALSE.equals(
-          historyMessageRepository.put(
+          super.historyMessageRepository.put(
               new HistoryMessage(messageId, queue, RequestConstant.BROKER_RABBIT)))) {
         LOGGER.warn("[RabbitConsumer][{}][{}]  message has been processed", queue, timestamp);
         return;
@@ -68,7 +58,7 @@ public class Lv24HTransactionEventListenerBaseRetries
       LOGGER.error("[RabbitConsumer][{}][{}]  Exception revert ", queue, timestamp, e);
       var retryData = new MessageData<>(input);
       retryData.updateMessageId(messageId);
-      messageInterceptor.convertAndSendRetriesEvent(
+      super.messageInterceptor.convertAndSendRetriesEvent(
           new RetriesMessageData(messageId, JsonUtils.toJson(retryData), queue, 300, 15));
     } finally {
       ThreadContext.clearAll();
