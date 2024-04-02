@@ -21,7 +21,7 @@ import vn.com.atomi.loyalty.base.data.BaseEntity;
 @AllArgsConstructor
 @Entity
 @Table(name = "EG_CARD_TRANSACTION_INFO")
-public class CardTransactionInfo {
+public class CardTransactionInfo extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EG_CARD_TRANS_INFO_ID_SEQ")
@@ -30,8 +30,10 @@ public class CardTransactionInfo {
       sequenceName = "EG_CARD_TRANS_INFO_ID_SEQ",
       allocationSize = 1)
   private Long id;
+
   @Column(name = "CUSTOMER_NAME")
   private String customerName;
+
   @Column(name = "CARD_ID")
   private String cardId;
   @Column(name = "CARD_NUMBER")

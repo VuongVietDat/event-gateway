@@ -1,30 +1,25 @@
 package vn.com.atomi.loyalty.eventgateway.service.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.ThreadContext;
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
-import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
@@ -39,71 +34,72 @@ import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionFileRep
 import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionInfoRepository;
 import vn.com.atomi.loyalty.eventgateway.repository.redis.CustomRepository;
 import vn.com.atomi.loyalty.eventgateway.service.CardTransactionService;
-import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardTransactionServiceImpl extends BaseService implements CardTransactionService {
 
-  @Autowired
-  private CardTransactionInfoRepository cardTransactionInfoRepository;
+  @Autowired private CardTransactionInfoRepository cardTransactionInfoRepository;
 
-  @Autowired
-  private CardTransactionFileRepository cardTransactionFileRepository;
+  @Autowired private CardTransactionFileRepository cardTransactionFileRepository;
 
   private final ApplicationEventPublisher applicationEventPublisher;
   private final CustomRepository customRepository;
-  private final ModelMapper modelMapper;
-
   private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
+  /**
+   * Chia 2 luồng xử lý bất đồng bộ
+   *
+   * @param transactionFile
+   */
   @Override
   public void uploadTransactionFile(MultipartFile transactionFile) {
+    /*Luồng 1 :  Khởi tạo bản ghi file transaction */
     String fileName = transactionFile.getOriginalFilename();
     log.info("uploadTransactionFile {}", fileName);
-    CardTransactionFile cardTransactionFile = createCardTransactionFile(fileName,
-        StatusCardTransaction.INITIALIZING);
+    CardTransactionFile cardTransactionFile =
+        createCardTransactionFile(fileName, StatusCardTransaction.INITIALIZING);
     cardTransactionFile = cardTransactionFileRepository.save(cardTransactionFile);
 
-    InputStream inputStream = null;
     var context = ThreadContext.getContext();
     CardTransactionFile finalCardTransactionFile = cardTransactionFile;
-    threadPoolTaskExecutor.execute(() -> {
-      ThreadContext.putAll(context);
-      try {
-        if (isCheckExcelFile(transactionFile)) {
-          finalCardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZE_ERROR);
-          cardTransactionFileRepository.save(finalCardTransactionFile);
-        }
-        List<CardTransactionInfo> batch = new ArrayList<>();
-        int batchSize = 100;
-        ReadableWorkbook workbook = null;
-        workbook = new ReadableWorkbook(transactionFile.getInputStream());
-        Sheet sheet = workbook.getFirstSheet();
-        Iterator<Row> rowIterator = null;
-        var rows = sheet.read();
-        var mapIndex = getTitleIndex(rows.get(0));
-        var n = rows.size();
-        List<CardTransactionInfo> card = new ArrayList<>();
-        for (int i = 1; i < n; i++) {
-          card.add(createEntitiesFromRows(mapIndex,
-              rows.get(i)));
-          if (card.size() == batchSize || i == n - 1) {
-            customRepository.saveAllCardTransactionInfos(card,
-                finalCardTransactionFile.getId());
-            card.clear();
+    /*Luồng 2 : Đọc & Lưu thông tin chi tiết file transaction */
+    threadPoolTaskExecutor.execute(
+        () -> {
+          ThreadContext.putAll(context);
+          try {
+            if (isCheckExcelFile(transactionFile)) {
+              finalCardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZE_ERROR);
+              cardTransactionFileRepository.save(finalCardTransactionFile);
+            }
+            /* Giới hạn từng lô bản ghi là 100 */
+            int batchSize = 100;
+            ReadableWorkbook workbook = null;
+            workbook = new ReadableWorkbook(transactionFile.getInputStream());
+            Sheet sheet = workbook.getFirstSheet();
+            var rows = sheet.read();
+            var mapIndex = getTitleIndex(rows.get(0));
+            var n = rows.size();
+            List<CardTransactionInfo> card = new ArrayList<>();
+            for (int i = 1; i < n; i++) {
+              card.add(createEntitiesFromRows(mapIndex, rows.get(i)));
+              if (card.size() == batchSize || i == n - 1) {
+                customRepository.saveAllCardTransactionInfos(
+                    card, finalCardTransactionFile.getId());
+                card.clear();
+              }
+            }
+            finalCardTransactionFile.setStatusCard(StatusCardTransaction.IN_PROGRESS);
+            cardTransactionFileRepository.save(finalCardTransactionFile);
+            LOGGER.info("Success");
+          } catch (BaseException e) {
+            finalCardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZE_ERROR);
+            cardTransactionFileRepository.save(finalCardTransactionFile);
+          } catch (IOException e) {
+            LOGGER.error(String.valueOf(e));
           }
-        }
-        finalCardTransactionFile.setStatusCard(StatusCardTransaction.IN_PROGRESS);
-        cardTransactionFileRepository.save(finalCardTransactionFile);
-      } catch (BaseException e) {
-        finalCardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZE_ERROR);
-        cardTransactionFileRepository.save(finalCardTransactionFile);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
+        });
   }
 
   public static boolean isCheckExcelFile(MultipartFile file) {
@@ -131,66 +127,57 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
     columnIndexToFieldName.put("NGHI NGỜ ĐÁO HẠN", "maturityDoubt");
 
     Map<Integer, String> indexMap = new HashMap<>();
-    row0.forEach(cell -> {
-      var fieldName = columnIndexToFieldName.get(cell.getRawValue());
-      if (fieldName != null) {
-        indexMap.put(cell.getColumnIndex(), fieldName);
-      }
-    });
+    row0.forEach(
+        cell -> {
+          var fieldName = columnIndexToFieldName.get(cell.getRawValue());
+          if (fieldName != null) {
+            indexMap.put(cell.getColumnIndex(), fieldName);
+          }
+        });
 
     return indexMap;
   }
 
   @Override
   public void updateCardTransaction(CardTransactionInfoInput cardTransactionInfoInput) {
-    CardTransactionInfo cardTransactionInfo = cardTransactionInfoRepository
-        .findById(cardTransactionInfoInput.getId())
-        .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
+    var cardTransactionInfo =
+        cardTransactionInfoRepository
+            .findById(cardTransactionInfoInput.getId())
+            .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
 
-    modelMapper.getConfiguration().setSkipNullEnabled(true);
-    modelMapper.map(cardTransactionInfoInput, cardTransactionInfo);
+    super.modelMapper.updateCardTransactionInfo(cardTransactionInfoInput, cardTransactionInfo);
     cardTransactionInfoRepository.save(cardTransactionInfo);
   }
 
   @Override
   public CardTransactionFileOutput getDetailCardTransaction(Long id) {
     var cardTransactionFile =
-        cardTransactionFileRepository.findByDeletedFalseAndId(id)
+        cardTransactionFileRepository
+            .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
     return super.modelMapper.getDetail(cardTransactionFile);
   }
 
   @Override
-  public ResponsePage<CardTransactionInfoOutput> getDetailCardTransactionInfo(Long id,
-      Pageable pageable) {
-    var cardTransactionInfo =
-        cardTransactionInfoRepository.findByCondition(
-            id,
-            pageable
-        );
-    if (!CollectionUtils.isEmpty(cardTransactionInfo.getContent())) {
-      return new ResponsePage<>(
-          cardTransactionInfo,
-          super.modelMapper.getDetailCardTransactionInfo(cardTransactionInfo.getContent()));
-    }
-    return null;
+  public ResponsePage<CardTransactionInfoOutput> getDetailCardTransactionInfo(
+      Long id, Pageable pageable) {
+    var cardTransactionInfo = cardTransactionInfoRepository.findByCondition(id, pageable);
+    return new ResponsePage<>(
+        cardTransactionInfo,
+        super.modelMapper.getDetailCardTransactionInfo(cardTransactionInfo.getContent()));
   }
 
   @Override
-  public ResponsePage<CardTransactionFileOutput> getListTransactionFile(Long id,
-      String startTransactionDate, String endTransactionDate, String statusCard, String createdBy,
+  public ResponsePage<CardTransactionFileOutput> getListTransactionFile(
+      Long id,
+      Date startTransactionDate,
+      Date endTransactionDate,
+      String statusCard,
+      String createdBy,
       Pageable pageable) {
     var page =
-        cardTransactionFileRepository.getListCardTransactionFile(id,
-            Utils.reformatStringDate(
-                startTransactionDate,
-                DateConstant.STR_PLAN_DD_MM_YYYY_STROKE,
-                DateConstant.ISO_8601_EXTENDED_DATE_FORMAT_STROKE),
-            Utils.reformatStringDate(
-                endTransactionDate,
-                DateConstant.STR_PLAN_DD_MM_YYYY_STROKE,
-                DateConstant.ISO_8601_EXTENDED_DATE_FORMAT_STROKE), statusCard, createdBy,
-            pageable);
+        cardTransactionFileRepository.getListCardTransactionFile(
+            id, startTransactionDate, endTransactionDate, statusCard, createdBy, pageable);
     return new ResponsePage<>(
         page, super.modelMapper.convertToCardTransactionInfoOutPut(page.getContent()));
   }
@@ -215,20 +202,19 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
           field.set(cardTransactionInfo, Integer.parseInt(value));
         }
       } catch (NoSuchFieldException | IllegalAccessException e) {
-        e.printStackTrace();
+        LOGGER.error(String.valueOf(e));
       }
     }
 
     return cardTransactionInfo;
   }
 
-  private CardTransactionFile createCardTransactionFile(String fileName,
-      StatusCardTransaction statusCard) {
+  private CardTransactionFile createCardTransactionFile(
+      String fileName, StatusCardTransaction statusCard) {
     CardTransactionFile cardTransactionFile = new CardTransactionFile();
     cardTransactionFile.setName(fileName);
     cardTransactionFile.setStatusCard(statusCard);
     cardTransactionFileRepository.save(cardTransactionFile);
     return cardTransactionFile;
   }
-
 }

@@ -27,4 +27,12 @@ public class Authority {
     public static final String UPDATE_GIFT = "hasAuthority('UPDATE_GIFT')";
     public static final String READ_GIFT = "hasAuthority('READ_GIFT')";
   }
+
+  public static class CardTransaction {
+    public static final String UPLOAD_TRANSACTION_FILE = "hasAuthority('UPLOAD_TRANSACTION_FILE')";
+    public static final String UPDATE_CARD_TRANSACTION = "hasAuthority('UPDATE_CARD_TRANSACTION')";
+    public static final String DETAIL_TRANSACTION_FILE = "hasAuthority('DETAIL_TRANSACTION_FILE')";
+    public static final String DETAIL_TRANSACTION_INFO = "hasAuthority('DETAIL_TRANSACTION_INFO')";
+    public static final String LIST_TRANSACTION_FILE = "hasAuthority('LIST_TRANSACTION_FILE')";
+  }
 }

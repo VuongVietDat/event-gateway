@@ -13,10 +13,12 @@ public interface CardTransactionInfoRepository extends JpaRepository<CardTransac
 
   Optional<CardTransactionInfo> findById(Long id);
 
-  @Query(value = "SELECT  * "
-      + "FROM LOYALTY_GIFT.eg_card_transaction_info i "
-      + "WHERE "
-      + "   i.card_transaction_file_id = :id" , nativeQuery = true)
+  @Query(
+      value =
+          "SELECT  *  "
+              + " FROM eg_card_transaction_info i "
+              + " WHERE "
+              + "   i.card_transaction_file_id = :id",
+      nativeQuery = true)
   Page<CardTransactionInfo> findByCondition(Long id, Pageable pageable);
-
 }

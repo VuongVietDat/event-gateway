@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.eventgateway.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.mapstruct.*;
+import vn.com.atomi.loyalty.eventgateway.dto.input.CardTransactionInfoInput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.*;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionFile;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
@@ -12,7 +13,7 @@ import vn.com.atomi.loyalty.eventgateway.enums.ApprovalStatus;
  * @author haidv
  * @version 1.0
  */
-@Mapper
+@Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface ModelMapper {
 
   default String getApprover(ApprovalStatus approvalStatus, String updateBy) {
@@ -49,4 +50,7 @@ public interface ModelMapper {
 
   List<CardTransactionFileOutput> convertToCardTransactionInfoOutPut(
       List<CardTransactionFile> content);
+
+  void updateCardTransactionInfo(
+      CardTransactionInfoInput input, @MappingTarget CardTransactionInfo output);
 }
