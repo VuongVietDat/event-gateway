@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.eventgateway.service.impl;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,15 +82,34 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
             var rows = sheet.read();
             var mapIndex = getTitleIndex(rows.get(0));
             var n = rows.size();
+            final int[] totalSuccessful = {0};
+            final int[] totalFailed = {0};
+            BigDecimal totalTransactionMoney = BigDecimal.ZERO;
             List<CardTransactionInfo> card = new ArrayList<>();
             for (int i = 1; i < n; i++) {
               card.add(createEntitiesFromRows(mapIndex, rows.get(i)));
-              if (card.size() == batchSize || i == n - 1) {
-                customRepository.saveAllCardTransactionInfos(
-                    card, finalCardTransactionFile.getId());
+              try {
+                if (card.size() == batchSize || i == n - 1) {
+                  customRepository.saveAllCardTransactionInfos(
+                      card, finalCardTransactionFile.getId());
+                  totalSuccessful[0] += card.size();
+                  totalTransactionMoney =
+                      card.stream()
+                          .map(item -> new BigDecimal(item.getTotalAmount()))
+                          .reduce(BigDecimal.ZERO, BigDecimal::add);
+                  card.clear();
+                }
+              } catch (BaseException e) {
+                totalFailed[0] += card.size();
+                LOGGER.error(
+                    "Error saving card: " + totalFailed[0] + ", Exception: " + e.getMessage());
                 card.clear();
               }
             }
+            finalCardTransactionFile.setTotalRecordSuccessful(String.valueOf(totalSuccessful[0]));
+            finalCardTransactionFile.setTotalRecordFailed(String.valueOf(totalFailed[0]));
+            finalCardTransactionFile.setTotalTransactionMoney(
+                String.valueOf(totalTransactionMoney));
             finalCardTransactionFile.setStatusCard(StatusCardTransaction.IN_PROGRESS);
             cardTransactionFileRepository.save(finalCardTransactionFile);
             LOGGER.info("Success");

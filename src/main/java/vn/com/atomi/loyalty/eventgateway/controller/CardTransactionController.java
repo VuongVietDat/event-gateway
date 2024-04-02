@@ -51,7 +51,7 @@ public class CardTransactionController extends BaseController {
     return ResponseUtils.success();
   }
 
-  @Operation(summary = "Api xem chi tiết file giao dịch thẻ")
+  @Operation(summary = "Api lấy thông tin file giao dịch thẻ")
   @PreAuthorize(Authority.CardTransaction.DETAIL_TRANSACTION_FILE)
   @GetMapping("/card-transaction/file/detail")
   public ResponseEntity<ResponseData<CardTransactionFileOutput>> detailCardTransactionFile(
@@ -59,7 +59,7 @@ public class CardTransactionController extends BaseController {
     return ResponseUtils.success(cardTransactionService.getDetailCardTransaction(id));
   }
 
-  @Operation(summary = "Api lấy danh sách giao dịch thẻ")
+  @Operation(summary = "Api lấy danh sách chi tiết giao dịch thẻ")
   @PreAuthorize(Authority.CardTransaction.DETAIL_TRANSACTION_INFO)
   @GetMapping("/card-transaction/info/{id}")
   public ResponseEntity<ResponseData<ResponsePage<CardTransactionInfoOutput>>>
