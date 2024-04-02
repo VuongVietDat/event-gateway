@@ -1,5 +1,6 @@
 package vn.com.atomi.loyalty.base.event;
 
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
@@ -10,7 +11,6 @@ import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.redis.HistoryMessage;
 import vn.com.atomi.loyalty.base.redis.HistoryMessageRepository;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
-import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 /**
  * @author haidv
@@ -86,7 +86,7 @@ public abstract class BaseMessageListener<T> {
       String topic, String partition, String offset, MessageData<T> input, String messageId);
 
   protected void initListener(String topic, String partition, String offset, String data) {
-    ThreadContext.put(RequestConstant.REQUEST_ID, Utils.generateUniqueId());
+    ThreadContext.put(RequestConstant.REQUEST_ID, UUID.randomUUID().toString());
     ThreadContext.put(RequestConstant.BROKER_TYPE, RequestConstant.BROKER_KAFKA);
     ThreadContext.put(RequestConstant.MESSAGE_EVENT, topic);
     LOGGER.info("[KafkaConsumer][{}][{}][{}] Incoming: {}", topic, partition, offset, data);

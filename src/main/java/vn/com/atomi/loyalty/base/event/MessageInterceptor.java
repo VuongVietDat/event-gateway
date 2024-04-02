@@ -46,12 +46,40 @@ public class MessageInterceptor {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void convertAndSend(String queueName, MessageData payload) {
+    var payloadJson = JsonUtils.toJson(payload);
     LOGGER.info(
         "Start push message to queue: {} messageId: {} with payload: {}",
         queueName,
         payload.getMessageId(),
-        JsonUtils.toJson(payload));
-    kafkaTemplate.send(queueName, JsonUtils.toJson(payload));
+        payloadJson);
+    kafkaTemplate.send(queueName, payloadJson);
     LOGGER.info("End push message to queue: {} messageId: {}", queueName, payload.getMessageId());
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void convertAndSend(String queueName, String key, MessageData payload) {
+    var payloadJson = JsonUtils.toJson(payload);
+    LOGGER.info(
+        "Start push message to queue: {} messageId: {} with payload: {}",
+        queueName,
+        payload.getMessageId(),
+        payloadJson);
+    kafkaTemplate.send(queueName, key, payloadJson);
+    LOGGER.info("End push message to queue: {} messageId: {}", queueName, payload.getMessageId());
+  }
+
+  @SuppressWarnings({"unchecked"})
+  public void convertAndSend(RetriesMessageData payload) {
+    var payloadJson = JsonUtils.toJson(payload);
+    LOGGER.info(
+        "Start push message to queue: {} messageId: {} with payload: {}",
+        payload.getDestination(),
+        payload.getMessageId(),
+        payloadJson);
+    kafkaTemplate.send(payload.getDestination(), payload.getRetryMessageId(), payloadJson);
+    LOGGER.info(
+        "End push message to queue: {} messageId: {}",
+        payload.getDestination(),
+        payload.getMessageId());
   }
 }
