@@ -60,4 +60,12 @@ public class Utils {
   public static String formatLocalDateToString(LocalDate date) {
     return date == null ? null : LOCAL_DATE_FORMATTER.format(date);
   }
+
+  public static String reformatStringDate(String date, String fromFormat, String toFormat) {
+    return StringUtils.isEmpty(date)
+        ? null
+        : DateTimeFormatter.ofPattern(toFormat)
+            .format(LocalDate.parse(date, DateTimeFormatter.ofPattern(fromFormat)));
+  }
+
 }

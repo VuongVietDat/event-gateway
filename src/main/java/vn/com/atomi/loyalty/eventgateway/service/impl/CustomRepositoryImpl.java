@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
 import vn.com.atomi.loyalty.eventgateway.repository.redis.CustomRepository;
 
@@ -17,21 +18,24 @@ public class CustomRepositoryImpl implements CustomRepository {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
   private final EntityManager entityManager;
-  @Override
-  public void saveAllCardTransactionInfos(List<CardTransactionInfo> batch) {
-    String saveCardInfos = "INSERT INTO card_transaction_info (cif, card_id, card_number, " +
-        "customer_name, product_id, card_rank, card_category, card_limit, " +
-        "issue_organization, phone_number, total_transaction, total_amount, " +
-        "maturity_doubt) VALUES ";
 
-    for (int i = 0; i < batch.size(); i++) {
-      saveCardInfos += "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-      if (i < batch.size() - 1) {
-        saveCardInfos += ",";
-      }
+  @Transactional
+  @Override
+  public void saveAllCardTransactionInfos(List<CardTransactionInfo> batch , Long cardTransactionFileId) {
+    StringBuilder saveCardInfos = new StringBuilder("INSERT ALL ");
+
+    for (CardTransactionInfo card : batch) {
+      saveCardInfos.append("INTO EG_CARD_TRANSACTION_INFO (id, cif, card_id, card_number, ")
+          .append("customer_name, product_id, card_rank, card_category, card_limit, ")
+          .append("issue_organization, phone_number, total_transaction, total_amount, ")
+          .append("maturity_doubt , card_transaction_file_id) VALUES (GET_CTI_ID_SEQ(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,")
+          .append(cardTransactionFileId)
+          .append(")");
     }
 
-    Query query = entityManager.createNativeQuery(saveCardInfos);
+    saveCardInfos.append(" SELECT * FROM DUAL");
+
+    Query query = entityManager.createNativeQuery(saveCardInfos.toString().formatted());
 
     int parameterIndex = 1;
     for (CardTransactionInfo card : batch) {
@@ -50,7 +54,8 @@ public class CustomRepositoryImpl implements CustomRepository {
       query.setParameter(parameterIndex++, card.getMaturityDoubt());
     }
 
-    query.executeUpdate();
+   query.executeUpdate();
+
   }
 
 }

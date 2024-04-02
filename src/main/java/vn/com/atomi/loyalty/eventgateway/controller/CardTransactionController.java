@@ -3,7 +3,6 @@ package vn.com.atomi.loyalty.eventgateway.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.data.BaseController;
 import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
@@ -34,7 +35,7 @@ public class CardTransactionController extends BaseController {
   public ResponseEntity<ResponseData<Void>>
   uploadTransactionFile(
       @Parameter(description = "File danh sách upload giao dịch thẻ") @RequestParam MultipartFile transactionFile
-  ){
+  ) {
     cardTransactionService.uploadTransactionFile(transactionFile);
     return ResponseUtils.success();
   }
@@ -50,7 +51,7 @@ public class CardTransactionController extends BaseController {
 
   @Operation(summary = "Api xem chi tiết file giao dịch thẻ")
   //  @PreAuthorize(Authority.CustomerGroup.READ_CUSTOMER_GROUP)
-  @GetMapping("/card-transaction/file")
+  @GetMapping("/card-transaction/file/detail")
   public ResponseEntity<ResponseData<CardTransactionFileOutput>> detailCardTransactionFile(
       @Parameter(description = "Id bản ghi file transaction") @RequestParam Long id) {
     return ResponseUtils.success(cardTransactionService.getDetailCardTransaction(id));
@@ -59,7 +60,7 @@ public class CardTransactionController extends BaseController {
   @Operation(summary = "Api lấy danh sách giao dịch thẻ")
 //  @PreAuthorize(Authority.CustomerGroup.READ_CUSTOMER_GROUP)
   @GetMapping("/card-transaction/info/{id}")
-  public ResponseEntity<ResponseData<ResponsePage<CardTransactionInfoOutput>>> getCustomerGroups(
+  public ResponseEntity<ResponseData<ResponsePage<CardTransactionInfoOutput>>> getListTransactionInfo(
       @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
       Integer pageNo,
       @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200", example = "10") @RequestParam
@@ -74,5 +75,49 @@ public class CardTransactionController extends BaseController {
     return ResponseUtils.success(
         cardTransactionService.getDetailCardTransactionInfo(
             id, super.pageable(pageNo, pageSize, sort)));
+  }
+
+  @Operation(summary = "Api tra cứu thông tin giao dịch thẻ")
+//  @PreAuthorize(Authority.CustomerGroup.READ_CUSTOMER_GROUP)
+  @GetMapping("/card-transaction/file/list")
+  public ResponseEntity<ResponseData<ResponsePage<CardTransactionFileOutput>>> getListTransactionFile(
+      @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
+      Integer pageNo,
+      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200", example = "10") @RequestParam
+      Integer pageSize,
+      @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
+      @RequestParam(required = false)
+      String sort,
+      @Parameter(description = "Id bản ghi file giao dịch thẻ")
+      @RequestParam(required = false)
+      Long id,
+      @Parameter(
+          description = "Thời gian giao dịch từ ngày (dd/MM/yyyy)",
+          example = "01/01/2024")
+      @DateTimeValidator(
+          required = false,
+          pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+      @RequestParam(required = false)
+      String startTransactionDate,
+      @Parameter(
+          description = "Thời gian giao dịch đến ngày (dd/MM/yyyy)",
+          example = "31/12/2024")
+      @DateTimeValidator(
+          required = false,
+          pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+      @RequestParam(required = false)
+      String endTransactionDate,
+      @Parameter(description = "Trạng thái giao dịch thẻ")
+      @RequestParam(required = false)
+      String statusCard,
+      @Parameter(description = "Người thực hiện")
+      @RequestParam(required = false)
+      String createdBy
+
+  ) {
+    return ResponseUtils.success(
+        cardTransactionService.getListTransactionFile(
+            id, startTransactionDate, endTransactionDate, statusCard, createdBy,
+            super.pageable(pageNo, pageSize, sort)));
   }
 }

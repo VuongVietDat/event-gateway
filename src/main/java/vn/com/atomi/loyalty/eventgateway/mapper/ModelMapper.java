@@ -46,4 +46,7 @@ public interface ModelMapper {
   CardTransactionFileOutput getDetail(CardTransactionFile cardTransactionFile);
 
   List<CardTransactionInfoOutput> getDetailCardTransactionInfo(List<CardTransactionInfo> content);
+
+  List<CardTransactionFileOutput> convertToCardTransactionInfoOutPut(
+      List<CardTransactionFile> content);
 }

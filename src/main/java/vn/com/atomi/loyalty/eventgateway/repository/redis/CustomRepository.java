@@ -5,5 +5,5 @@ import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
 
 public interface CustomRepository {
 
-  void saveAllCardTransactionInfos(List<CardTransactionInfo> batch);
+  void saveAllCardTransactionInfos(List<CardTransactionInfo> batch , Long cardTransactionFileId);
 }
