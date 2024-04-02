@@ -1,10 +1,10 @@
-package vn.com.atomi.loyalty.eventgateway.event;
+package vn.com.atomi.loyalty.base.event;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 /**
  * @author haidv
@@ -23,24 +23,24 @@ public class MessageData<T> {
   private List<T> contents;
 
   public MessageData(String subject, T content) {
-    this.messageId = Utils.generateUniqueId();
+    this.messageId = UUID.randomUUID().toString();
     this.subject = subject;
     this.contents = Collections.singletonList(content);
   }
 
   public MessageData(String subject, List<T> contents) {
-    this.messageId = Utils.generateUniqueId();
+    this.messageId = UUID.randomUUID().toString();
     this.subject = subject;
     this.contents = contents;
   }
 
   public MessageData(T content) {
-    this.messageId = Utils.generateUniqueId();
+    this.messageId = UUID.randomUUID().toString();
     this.contents = Collections.singletonList(content);
   }
 
   public MessageData(List<T> contents) {
-    this.messageId = Utils.generateUniqueId();
+    this.messageId = UUID.randomUUID().toString();
     this.contents = contents;
   }
 

@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.eventgateway.event;
+package vn.com.atomi.loyalty.base.event;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -42,5 +42,16 @@ public class MessageInterceptor {
     kafkaTemplate.send(retriesEventTopic, payload.getMessageId(), JsonUtils.toJson(payload));
     LOGGER.info(
         "End push message to queue: {} messageId: {}", retriesEventTopic, payload.getMessageId());
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void convertAndSend(String queueName, MessageData payload) {
+    LOGGER.info(
+        "Start push message to queue: {} messageId: {} with payload: {}",
+        queueName,
+        payload.getMessageId(),
+        JsonUtils.toJson(payload));
+    kafkaTemplate.send(queueName, JsonUtils.toJson(payload));
+    LOGGER.info("End push message to queue: {} messageId: {}", queueName, payload.getMessageId());
   }
 }
