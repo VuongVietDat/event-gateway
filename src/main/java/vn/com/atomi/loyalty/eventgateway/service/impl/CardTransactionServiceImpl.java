@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -35,15 +33,15 @@ import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionFileRep
 import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionInfoRepository;
 import vn.com.atomi.loyalty.eventgateway.repository.redis.CustomRepository;
 import vn.com.atomi.loyalty.eventgateway.service.CardTransactionService;
+import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardTransactionServiceImpl extends BaseService implements CardTransactionService {
 
-  @Autowired private CardTransactionInfoRepository cardTransactionInfoRepository;
-
-  @Autowired private CardTransactionFileRepository cardTransactionFileRepository;
+  private final CardTransactionInfoRepository cardTransactionInfoRepository;
+  private final CardTransactionFileRepository cardTransactionFileRepository;
 
   private final ApplicationEventPublisher applicationEventPublisher;
   private final CustomRepository customRepository;
@@ -117,7 +115,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
             finalCardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZE_ERROR);
             cardTransactionFileRepository.save(finalCardTransactionFile);
           } catch (IOException e) {
-            LOGGER.error(String.valueOf(e));
+            LOGGER.error(e.getMessage());
           }
         });
   }
@@ -181,7 +179,8 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
   @Override
   public ResponsePage<CardTransactionInfoOutput> getDetailCardTransactionInfo(
       Long id, Pageable pageable) {
-    var cardTransactionInfo = cardTransactionInfoRepository.findByCondition(id, pageable);
+    var cardTransactionInfo =
+        cardTransactionInfoRepository.findByDeletedFalseAndCardTransactionFileId(id, pageable);
     return new ResponsePage<>(
         cardTransactionInfo,
         super.modelMapper.getDetailCardTransactionInfo(cardTransactionInfo.getContent()));
@@ -190,14 +189,19 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
   @Override
   public ResponsePage<CardTransactionFileOutput> getListTransactionFile(
       Long id,
-      Date startTransactionDate,
-      Date endTransactionDate,
-      String statusCard,
+      String startTransactionDate,
+      String endTransactionDate,
+      StatusCardTransaction statusCard,
       String createdBy,
       Pageable pageable) {
     var page =
         cardTransactionFileRepository.getListCardTransactionFile(
-            id, startTransactionDate, endTransactionDate, statusCard, createdBy, pageable);
+            id,
+            Utils.convertToLocalDateTimeStartDay(startTransactionDate),
+            Utils.convertToLocalDateTimeStartDay(endTransactionDate),
+            statusCard,
+            createdBy,
+            pageable);
     return new ResponsePage<>(
         page, super.modelMapper.convertToCardTransactionInfoOutPut(page.getContent()));
   }
@@ -222,7 +226,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
           field.set(cardTransactionInfo, Integer.parseInt(value));
         }
       } catch (NoSuchFieldException | IllegalAccessException e) {
-        LOGGER.error(String.valueOf(e));
+        LOGGER.error(e.getMessage());
       }
     }
 

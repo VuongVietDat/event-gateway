@@ -4,7 +4,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
 
@@ -13,12 +12,5 @@ public interface CardTransactionInfoRepository extends JpaRepository<CardTransac
 
   Optional<CardTransactionInfo> findById(Long id);
 
-  @Query(
-      value =
-          "SELECT  *  "
-              + " FROM eg_card_transaction_info i "
-              + " WHERE "
-              + "   i.card_transaction_file_id = :id",
-      nativeQuery = true)
-  Page<CardTransactionInfo> findByCondition(Long id, Pageable pageable);
+  Page<CardTransactionInfo> findByDeletedFalseAndCardTransactionFileId(Long id, Pageable pageable);
 }

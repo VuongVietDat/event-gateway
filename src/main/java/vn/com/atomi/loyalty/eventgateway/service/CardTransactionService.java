@@ -7,6 +7,7 @@ import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.eventgateway.dto.input.CardTransactionInfoInput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionFileOutput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionInfoOutput;
+import vn.com.atomi.loyalty.eventgateway.enums.StatusCardTransaction;
 
 public interface CardTransactionService {
 
@@ -20,9 +21,9 @@ public interface CardTransactionService {
 
   ResponsePage<CardTransactionFileOutput> getListTransactionFile(
       Long id,
-      Date startTransactionDate,
-      Date endTransactionDate,
-      String statusCard,
+      String startTransactionDate,
+      String endTransactionDate,
+      StatusCardTransaction statusCard,
       String createdBy,
       Pageable pageable);
 }

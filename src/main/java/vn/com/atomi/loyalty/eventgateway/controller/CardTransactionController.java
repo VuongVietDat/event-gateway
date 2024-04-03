@@ -3,7 +3,6 @@ package vn.com.atomi.loyalty.eventgateway.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +23,7 @@ import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.eventgateway.dto.input.CardTransactionInfoInput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionFileOutput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionInfoOutput;
+import vn.com.atomi.loyalty.eventgateway.enums.StatusCardTransaction;
 import vn.com.atomi.loyalty.eventgateway.service.CardTransactionService;
 
 @RestController
@@ -95,22 +95,22 @@ public class CardTransactionController extends BaseController {
               Long id,
           @Parameter(
                   description = "Thời gian giao dịch từ ngày (dd/MM/yyyy)",
-                  example = "01-APR-24")
+                  example = "01/01/2024")
               @DateTimeValidator(
                   required = false,
                   pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
               @RequestParam(required = false)
-              Date startTransactionDate,
+              String startTransactionDate,
           @Parameter(
-                  description = "Thời gian giao dịch đến ngày (dd/MM/yyyy)",
-                  example = "01-APR-24")
+                  description = "Thời gian giao dịch từ ngày (dd/MM/yyyy)",
+                  example = "01/01/2024")
               @DateTimeValidator(
                   required = false,
                   pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
               @RequestParam(required = false)
-              Date endTransactionDate,
+              String endTransactionDate,
           @Parameter(description = "Trạng thái giao dịch thẻ") @RequestParam(required = false)
-              String statusCard,
+              StatusCardTransaction statusCard,
           @Parameter(description = "Người thực hiện") @RequestParam(required = false)
               String createdBy) {
 
