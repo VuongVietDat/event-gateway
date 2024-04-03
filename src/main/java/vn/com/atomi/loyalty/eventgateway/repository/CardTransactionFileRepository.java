@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.eventgateway.repository.redis;
+package vn.com.atomi.loyalty.eventgateway.repository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

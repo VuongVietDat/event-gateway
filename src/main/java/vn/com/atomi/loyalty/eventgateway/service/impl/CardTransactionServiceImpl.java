@@ -29,9 +29,9 @@ import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionFile;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
 import vn.com.atomi.loyalty.eventgateway.enums.ErrorCode;
 import vn.com.atomi.loyalty.eventgateway.enums.StatusCardTransaction;
-import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionFileRepository;
-import vn.com.atomi.loyalty.eventgateway.repository.redis.CardTransactionInfoRepository;
-import vn.com.atomi.loyalty.eventgateway.repository.redis.CustomRepository;
+import vn.com.atomi.loyalty.eventgateway.repository.CardTransactionFileRepository;
+import vn.com.atomi.loyalty.eventgateway.repository.CardTransactionInfoRepository;
+import vn.com.atomi.loyalty.eventgateway.repository.CustomRepository;
 import vn.com.atomi.loyalty.eventgateway.service.CardTransactionService;
 import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 

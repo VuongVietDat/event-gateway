@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.eventgateway.repository.redis;
+package vn.com.atomi.loyalty.eventgateway.repository;
 
 import java.util.Optional;
 import org.springframework.data.domain.Page;

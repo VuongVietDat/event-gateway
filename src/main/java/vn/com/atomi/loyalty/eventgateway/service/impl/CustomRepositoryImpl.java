@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
-import vn.com.atomi.loyalty.eventgateway.repository.redis.CustomRepository;
+import vn.com.atomi.loyalty.eventgateway.repository.CustomRepository;
 
 @Repository
 @RequiredArgsConstructor
