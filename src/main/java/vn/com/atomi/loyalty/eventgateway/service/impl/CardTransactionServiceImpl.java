@@ -115,7 +115,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
             finalCardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZE_ERROR);
             cardTransactionFileRepository.save(finalCardTransactionFile);
           } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
           }
         });
   }
@@ -226,7 +226,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
           field.set(cardTransactionInfo, Integer.parseInt(value));
         }
       } catch (NoSuchFieldException | IllegalAccessException e) {
-        LOGGER.error(e.getMessage());
+        LOGGER.error(e.getMessage(), e);
       }
     }
 
