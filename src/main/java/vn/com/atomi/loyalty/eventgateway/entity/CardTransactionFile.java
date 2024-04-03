@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.eventgateway.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
+import vn.com.atomi.loyalty.eventgateway.enums.StatusCardTransaction;
 
 /**
  * @author haidv
@@ -25,4 +26,20 @@ public class CardTransactionFile extends BaseEntity {
       sequenceName = "EG_CARD_TRANS_FILE_ID_SEQ",
       allocationSize = 1)
   private Long id;
+
+  @Column(name = "STATUS_CARD")
+  @Enumerated(EnumType.STRING)
+  private StatusCardTransaction statusCard;
+
+  @Column(name = "NAME")
+  private String name;
+
+  @Column(name = "TOTAL_RECORD_SUCCESSFUL")
+  private String totalRecordSuccessful;
+
+  @Column(name = "TOTAL_RECORD_FAILED")
+  private String totalRecordFailed;
+
+  @Column(name = "TOTAL_TRANSACTION_MONEY")
+  private String totalTransactionMoney;
 }
