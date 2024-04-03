@@ -14,7 +14,6 @@ import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -42,10 +41,13 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
 
   private final CardTransactionInfoRepository cardTransactionInfoRepository;
   private final CardTransactionFileRepository cardTransactionFileRepository;
-
-  private final ApplicationEventPublisher applicationEventPublisher;
   private final CustomRepository customRepository;
   private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+  public static boolean isCheckExcelFile(MultipartFile file) {
+    String fileName = file.getName();
+    return fileName.endsWith(".xls") || fileName.endsWith(".xlsx");
+  }
 
   /**
    * Chia 2 luồng xử lý bất đồng bộ
@@ -57,8 +59,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
     /*Luồng 1 :  Khởi tạo bản ghi file transaction */
     String fileName = transactionFile.getOriginalFilename();
     log.info("uploadTransactionFile {}", fileName);
-    CardTransactionFile cardTransactionFile =
-        createCardTransactionFile(fileName, StatusCardTransaction.INITIALIZING);
+    CardTransactionFile cardTransactionFile = createCardTransactionFile(fileName);
     cardTransactionFile = cardTransactionFileRepository.save(cardTransactionFile);
 
     var context = ThreadContext.getContext();
@@ -118,14 +119,6 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
             LOGGER.error(e.getMessage(), e);
           }
         });
-  }
-
-  public static boolean isCheckExcelFile(MultipartFile file) {
-    String fileName = file.getName();
-    if (!fileName.endsWith(".xls") && !fileName.endsWith(".xlsx")) {
-      return false;
-    }
-    return true;
   }
 
   private Map<Integer, String> getTitleIndex(Row row0) {
@@ -233,11 +226,10 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
     return cardTransactionInfo;
   }
 
-  private CardTransactionFile createCardTransactionFile(
-      String fileName, StatusCardTransaction statusCard) {
+  private CardTransactionFile createCardTransactionFile(String fileName) {
     CardTransactionFile cardTransactionFile = new CardTransactionFile();
     cardTransactionFile.setName(fileName);
-    cardTransactionFile.setStatusCard(statusCard);
+    cardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZING);
     cardTransactionFileRepository.save(cardTransactionFile);
     return cardTransactionFile;
   }

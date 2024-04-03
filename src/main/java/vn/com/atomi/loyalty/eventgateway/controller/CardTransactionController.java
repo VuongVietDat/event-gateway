@@ -6,12 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
@@ -72,7 +67,7 @@ public class CardTransactionController extends BaseController {
           @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
               @RequestParam(required = false)
               String sort,
-          @Parameter(description = "Id bản ghi file giao dịch thẻ") @RequestParam Long id) {
+          @Parameter(description = "Id bản ghi file giao dịch thẻ") @PathVariable Long id) {
     return ResponseUtils.success(
         cardTransactionService.getDetailCardTransactionInfo(
             id, super.pageable(pageNo, pageSize, sort)));
