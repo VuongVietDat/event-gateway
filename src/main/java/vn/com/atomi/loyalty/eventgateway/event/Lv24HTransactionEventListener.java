@@ -26,8 +26,7 @@ import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 @SuppressWarnings({"rawtypes"})
 @RequiredArgsConstructor
 @Component
-public class Lv24HTransactionEventListenerBaseRetries
-    extends BaseRetriesMessageListener<LinkedHashMap> {
+public class Lv24HTransactionEventListener extends BaseRetriesMessageListener<LinkedHashMap> {
 
   private final HandlerTransactionEventService handlerTransactionEventService;
 

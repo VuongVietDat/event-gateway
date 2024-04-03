@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.eventgateway.service.impl;
+package vn.com.atomi.loyalty.eventgateway.repository.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
