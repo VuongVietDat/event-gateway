@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.event.MessageData;
@@ -50,12 +51,13 @@ public class HandlerTransactionEventServiceImpl extends BaseService
                 AllocationPointTransactionInput.builder()
                     .transactionAt(
                         Utils.convertToLocalDateTime(
-                            lv24HTransactionMessage.getTransactionHeader().getTransTime()))
+                            lv24HTransactionMessage.getTransactionHeader().getTransTime(),
+                            DateConstant.STR_PLAN_YYYY_MM_DD_HH_MM_SS_SSS_STROKE))
                     .transactionGroup(
                         loyaltyConfigClient
                             .getLv24MapProduct(
                                 ThreadContext.get(RequestConstant.REQUEST_ID),
-                                lv24HTransactionMessage.getTransactionHeader().getProductID())
+                                lv24HTransactionMessage.getTransactionHeader().getProductId())
                             .getData()
                             .getTransactionGroup())
                     .refNo(lv24HTransactionMessage.getTransactionHeader().getTransCode())

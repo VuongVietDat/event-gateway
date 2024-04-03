@@ -11,25 +11,25 @@ import lombok.Setter;
 @Getter
 public class TransactionHeader {
 
-  private String rowID;
-  private String transID;
+  private String rowId;
+  private String transId;
   private String transCode;
-  private String userID;
+  private String userId;
   private String userName;
   private String transTime;
-  private String actionID;
+  private String actionId;
   private String transType;
   private String channelReceiver;
   private String stakUserTypeDo;
   private String userDo;
   private String branchCodeDo;
-  private String productID;
+  private String productId;
   private String businessProcess;
-  private String originalRequestID;
-  private String makerID;
+  private String originalRequestId;
+  private String makerId;
   private String makerDate;
   private String checkerDate;
-  private String requestID;
+  private String requestId;
   private String sourceType;
   private String categoryCode;
   private String custNoDo;

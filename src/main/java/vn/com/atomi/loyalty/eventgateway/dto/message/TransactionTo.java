@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 public class TransactionTo {
 
-  private String toSystemID;
+  private String toSystemId;
   private String toCustNo;
   private String toAccountNo;
   private String toAccountCurrency;

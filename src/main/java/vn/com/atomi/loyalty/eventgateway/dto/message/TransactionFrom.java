@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 public class TransactionFrom {
 
-  private String fromSystemID;
+  private String fromSystemId;
   private String fromCustNo;
   private String fromAccountClass;
   private String fromAccountType;

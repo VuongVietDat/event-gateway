@@ -34,6 +34,12 @@ public class Utils {
     return StringUtils.isEmpty(date) ? null : LocalDateTime.parse(date, LOCAL_DATETIME_FORMATTER);
   }
 
+  public static LocalDateTime convertToLocalDateTime(String date, String formatter) {
+    return StringUtils.isEmpty(date)
+        ? null
+        : LocalDateTime.parse(date, DateTimeFormatter.ofPattern(formatter));
+  }
+
   public static LocalDateTime convertToLocalDateTimeStartDay(String date) {
     return StringUtils.isEmpty(date)
         ? null
