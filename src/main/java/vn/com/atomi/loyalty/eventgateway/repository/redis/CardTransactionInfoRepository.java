@@ -10,7 +10,7 @@ import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
 @Repository
 public interface CardTransactionInfoRepository extends JpaRepository<CardTransactionInfo, Long> {
 
-  Optional<CardTransactionInfo> findById(Long id);
+  Optional<CardTransactionInfo> findByDeletedFalseAndId(Long id);
 
   Page<CardTransactionInfo> findByDeletedFalseAndCardTransactionFileId(Long id, Pageable pageable);
 }

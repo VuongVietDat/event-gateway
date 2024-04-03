@@ -160,7 +160,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
   public void updateCardTransaction(CardTransactionInfoInput cardTransactionInfoInput) {
     var cardTransactionInfo =
         cardTransactionInfoRepository
-            .findById(cardTransactionInfoInput.getId())
+            .findByDeletedFalseAndId(cardTransactionInfoInput.getId())
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
 
     super.modelMapper.updateCardTransactionInfo(cardTransactionInfoInput, cardTransactionInfo);
