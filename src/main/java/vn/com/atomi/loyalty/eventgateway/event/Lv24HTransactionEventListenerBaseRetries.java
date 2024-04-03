@@ -16,6 +16,7 @@ import vn.com.atomi.loyalty.base.event.RetriesMessageData;
 import vn.com.atomi.loyalty.base.redis.HistoryMessage;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
 import vn.com.atomi.loyalty.eventgateway.dto.message.Lv24HTransactionMessage;
+import vn.com.atomi.loyalty.eventgateway.service.HandlerTransactionEventService;
 import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 /**
@@ -27,6 +28,8 @@ import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 @Component
 public class Lv24HTransactionEventListenerBaseRetries
     extends BaseRetriesMessageListener<LinkedHashMap> {
+
+  private final HandlerTransactionEventService handlerTransactionEventService;
 
   @RabbitListener(queues = "${custom.properties.rabbitmq.queue.lv24h-transaction-event.name}")
   public void lv24hTransactionEvent(
@@ -52,7 +55,7 @@ public class Lv24HTransactionEventListenerBaseRetries
         LOGGER.warn("[RabbitConsumer][{}][{}]  message has been processed", queue, timestamp);
         return;
       }
-      handleMessageEvent(input, messageId);
+      handleMessageEvent(input);
       LOGGER.info("[RabbitConsumer][{}][{}]  successful!", queue, timestamp);
     } catch (Exception e) {
       LOGGER.error("[RabbitConsumer][{}][{}]  Exception revert ", queue, timestamp, e);
@@ -79,9 +82,14 @@ public class Lv24HTransactionEventListenerBaseRetries
     super.messageRetriesListener(data, topic, partition, offset, acknowledgment);
   }
 
-  private void handleMessageEvent(Lv24HTransactionMessage input, String messageId) {}
-
   @Override
   protected void handleMessageEvent(
-      String topic, String partition, String offset, MessageData input, String messageId) {}
+      String topic, String partition, String offset, MessageData input, String messageId) {
+    handleMessageEvent(
+        JsonUtils.fromJson(input.getContents().get(0), Lv24HTransactionMessage.class));
+  }
+
+  private void handleMessageEvent(Lv24HTransactionMessage input) {
+    handlerTransactionEventService.makeLv24hTransactionHandle(input);
+  }
 }
