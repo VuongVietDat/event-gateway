@@ -6,7 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.data.ResponseData;
-import vn.com.atomi.loyalty.eventgateway.dto.output.Lv24ProductDataMapOutput;
+import vn.com.atomi.loyalty.eventgateway.dto.output.SourceDataMapOutput;
+import vn.com.atomi.loyalty.eventgateway.enums.SourceGroup;
 import vn.com.atomi.loyalty.eventgateway.feign.LoyaltyConfigClient;
 
 /**
@@ -24,10 +25,10 @@ public class LoyaltyConfigClientFallbackFactory implements FallbackFactory<Loyal
     LOGGER.error("An exception occurred when calling the LoyaltyCoreClient", cause);
     return new LoyaltyConfigClient() {
       @Override
-      public ResponseData<Lv24ProductDataMapOutput> getLv24MapProduct(
-          String requestId, String productId) {
+      public ResponseData<SourceDataMapOutput> getSourceDataMap(
+          String requestId, String sourceId, String sourceType, SourceGroup sourceGroup) {
         log.info("getLv24MapProduct: set default empty object");
-        return new ResponseData<Lv24ProductDataMapOutput>().success(new Lv24ProductDataMapOutput());
+        return new ResponseData<SourceDataMapOutput>().success(new SourceDataMapOutput());
       }
     };
   }

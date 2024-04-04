@@ -10,6 +10,8 @@ public class Constants {
 
   public static final String DICTIONARY_RULE_BONUS_TYPE = "RULE_BONUS_TYPE";
 
+  public static final String SOURCE_TYPE_TRANSACTION = "TRANSACTION";
+
   public static final String DEFAULT_DAY_START_TIME = "00:00:00";
 
   public static final String DEFAULT_DAY_END_TIME = "23:59:59";

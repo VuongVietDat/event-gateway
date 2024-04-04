@@ -14,9 +14,11 @@ import vn.com.atomi.loyalty.eventgateway.dto.message.AllocationPointTransactionI
 import vn.com.atomi.loyalty.eventgateway.dto.message.Lv24HTransactionMessage;
 import vn.com.atomi.loyalty.eventgateway.dto.output.CustomerOutput;
 import vn.com.atomi.loyalty.eventgateway.enums.RuleType;
+import vn.com.atomi.loyalty.eventgateway.enums.SourceGroup;
 import vn.com.atomi.loyalty.eventgateway.feign.LoyaltyConfigClient;
 import vn.com.atomi.loyalty.eventgateway.feign.LoyaltyCoreClient;
 import vn.com.atomi.loyalty.eventgateway.service.HandlerTransactionEventService;
+import vn.com.atomi.loyalty.eventgateway.utils.Constants;
 import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 /**
@@ -55,11 +57,13 @@ public class HandlerTransactionEventServiceImpl extends BaseService
                             DateConstant.STR_PLAN_YYYY_MM_DD_HH_MM_SS_SSS_STROKE))
                     .transactionGroup(
                         loyaltyConfigClient
-                            .getLv24MapProduct(
+                            .getSourceDataMap(
                                 ThreadContext.get(RequestConstant.REQUEST_ID),
-                                lv24HTransactionMessage.getTransactionHeader().getProductId())
+                                lv24HTransactionMessage.getTransactionHeader().getProductId(),
+                                Constants.SOURCE_TYPE_TRANSACTION,
+                                SourceGroup.LV24H)
                             .getData()
-                            .getTransactionGroup())
+                            .getDestinationCode())
                     .refNo(lv24HTransactionMessage.getTransactionHeader().getTransCode())
                     .amount(
                         Long.parseLong(
