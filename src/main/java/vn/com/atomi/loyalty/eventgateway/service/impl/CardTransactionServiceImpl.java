@@ -294,7 +294,9 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
                     });
               }
             },
-            () -> {});
+            () -> {
+              LOGGER.error("Not found card upload file");
+            });
   }
 
   private CardTransactionInfo createEntitiesFromRows(Map<Integer, String> mapIndex, Row row) {
