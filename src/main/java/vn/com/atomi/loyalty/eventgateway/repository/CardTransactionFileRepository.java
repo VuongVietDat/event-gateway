@@ -23,7 +23,8 @@ public interface CardTransactionFileRepository extends JpaRepository<CardTransac
               + "    (:statusCard IS NULL OR a.statusCard = :statusCard) "
               + "    And (a.deleted = false ) "
               + "    And (:id IS NULL OR a.id = :id) "
-              + "    AND (:createdBy IS NULL OR a.createdBy = :createdBy) "
+              + "    AND (:createdBy IS NULL OR a.createdBy LIKE CONCAT('%', :createdBy, '%')) "
+              + "    AND (:nameFile IS NULL OR a.name LIKE CONCAT('%', :nameFile, '%'))"
               + "    AND (:startTransactionDate IS NULL OR a.createdAt >= :startTransactionDate) "
               + "    AND (:endTransactionDate IS NULL OR a.createdAt <= :endTransactionDate)")
   Page<CardTransactionFile> getListCardTransactionFile(
@@ -32,5 +33,6 @@ public interface CardTransactionFileRepository extends JpaRepository<CardTransac
       LocalDateTime endTransactionDate,
       StatusCardTransaction statusCard,
       String createdBy,
+      String nameFile,
       Pageable pageable);
 }

@@ -1,9 +1,14 @@
 package vn.com.atomi.loyalty.eventgateway.dto.output;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
+import vn.com.atomi.loyalty.base.data.BaseEntity;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,6 +29,11 @@ public class CardTransactionFileOutput {
   @Schema(description = "Người thực hiện")
   @NotNull
   private String createdBy;
+
+  @Schema(description = "Thời gian thực hiện")
+  @NotNull
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
+  private LocalDateTime createdAt;
 
   @Schema(description = "Tổng số bản ghi upload")
   @NotNull

@@ -186,6 +186,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
       String endTransactionDate,
       StatusCardTransaction statusCard,
       String createdBy,
+      String nameFile,
       Pageable pageable) {
     var page =
         cardTransactionFileRepository.getListCardTransactionFile(
@@ -194,6 +195,7 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
             Utils.convertToLocalDateTimeStartDay(endTransactionDate),
             statusCard,
             createdBy,
+            nameFile,
             pageable);
     return new ResponsePage<>(
         page, super.modelMapper.convertToCardTransactionInfoOutPut(page.getContent()));

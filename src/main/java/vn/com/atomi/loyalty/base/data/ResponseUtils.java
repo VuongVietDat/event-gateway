@@ -42,5 +42,4 @@ public class ResponseUtils {
   public static <T> ResponseData<T> getResponseDataError(int code, String message, T data) {
     return new ResponseData<T>().error(code, message, data);
   }
-
 }

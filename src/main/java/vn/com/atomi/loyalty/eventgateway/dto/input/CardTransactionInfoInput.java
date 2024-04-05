@@ -55,5 +55,4 @@ public class CardTransactionInfoInput {
 
   @Schema(description = "Id file thẻ giao dịch")
   private Long cardTransactionFileId;
-
 }

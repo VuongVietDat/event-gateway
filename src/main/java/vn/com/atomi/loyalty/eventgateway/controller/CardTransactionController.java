@@ -88,6 +88,7 @@ public class CardTransactionController extends BaseController {
               String sort,
           @Parameter(description = "Id bản ghi file giao dịch thẻ") @RequestParam(required = false)
               Long id,
+          @Parameter(description = "Tên tài liệu") @RequestParam(required = false) String nameFile,
           @Parameter(
                   description = "Thời gian giao dịch từ ngày (dd/MM/yyyy)",
                   example = "01/01/2024")
@@ -108,7 +109,6 @@ public class CardTransactionController extends BaseController {
               StatusCardTransaction statusCard,
           @Parameter(description = "Người thực hiện") @RequestParam(required = false)
               String createdBy) {
-
     return ResponseUtils.success(
         cardTransactionService.getListTransactionFile(
             id,
@@ -116,6 +116,7 @@ public class CardTransactionController extends BaseController {
             endTransactionDate,
             statusCard,
             createdBy,
+            nameFile,
             super.pageable(pageNo, pageSize, sort)));
   }
 }
