@@ -88,8 +88,7 @@ public class CardTransactionController extends BaseController {
               String sort,
           @Parameter(description = "Id bản ghi file giao dịch thẻ") @RequestParam(required = false)
               Long id,
-          @Parameter(description = "Tên tài liệu") @RequestParam(required = false)
-          String nameFile,
+          @Parameter(description = "Tên tài liệu") @RequestParam(required = false) String nameFile,
           @Parameter(
                   description = "Thời gian giao dịch từ ngày (dd/MM/yyyy)",
                   example = "01/01/2024")

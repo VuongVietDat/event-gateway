@@ -1,6 +1,5 @@
 package vn.com.atomi.loyalty.base.event;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -12,9 +11,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.web.multipart.MultipartFile;
 import vn.com.atomi.loyalty.base.exception.BaseException;
-import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionFile;
 
 /**
  * @author haidv

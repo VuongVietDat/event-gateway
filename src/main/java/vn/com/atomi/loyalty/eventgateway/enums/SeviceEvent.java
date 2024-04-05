@@ -7,8 +7,8 @@ import vn.com.atomi.loyalty.base.event.CoreEvent;
 @Getter
 @AllArgsConstructor
 public enum SeviceEvent implements CoreEvent {
-  INSERT_CARD_TRANSACTION_INFO("INSERT_CARD_TRANSACTION_INFO", "serviceDrivenEventListener",
-      "saveCardTransactionInfo");
+  INSERT_CARD_TRANSACTION_INFO(
+      "INSERT_CARD_TRANSACTION_INFO", "serviceDrivenEventListener", "saveCardTransactionInfo");
 
   private final String eventName;
 

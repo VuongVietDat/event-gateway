@@ -73,5 +73,4 @@ public class Utils {
         : DateTimeFormatter.ofPattern(toFormat)
             .format(LocalDate.parse(date, DateTimeFormatter.ofPattern(fromFormat)));
   }
-
 }

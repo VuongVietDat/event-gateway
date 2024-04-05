@@ -73,5 +73,4 @@ public class CardTransactionInfoOutput {
 
   @Schema(description = "Người tạo")
   private String creator;
-
 }
