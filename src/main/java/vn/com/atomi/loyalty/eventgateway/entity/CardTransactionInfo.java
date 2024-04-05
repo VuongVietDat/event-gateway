@@ -72,4 +72,7 @@ public class CardTransactionInfo extends BaseEntity {
 
   @Column(name = "CARD_TRANSACTION_FILE_ID")
   private Long cardTransactionFileId;
+
+  @Column(name = "REF_NO")
+  private String refNo;
 }
