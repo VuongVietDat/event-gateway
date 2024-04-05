@@ -25,5 +25,6 @@ public interface CardTransactionService {
       String endTransactionDate,
       StatusCardTransaction statusCard,
       String createdBy,
+      String nameFile,
       Pageable pageable);
 }
