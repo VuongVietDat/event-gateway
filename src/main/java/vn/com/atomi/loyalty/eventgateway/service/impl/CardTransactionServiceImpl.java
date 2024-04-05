@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.eventgateway.service.impl;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,24 +15,32 @@ import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
+import vn.com.atomi.loyalty.base.event.MessageData;
+import vn.com.atomi.loyalty.base.event.MessageInterceptor;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.eventgateway.dto.input.CardTransactionInfoInput;
-import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionFileOutput;
-import vn.com.atomi.loyalty.eventgateway.dto.output.CardTransactionInfoOutput;
+import vn.com.atomi.loyalty.eventgateway.dto.message.AllocationPointMessage;
+import vn.com.atomi.loyalty.eventgateway.dto.message.AllocationPointTransactionInput;
+import vn.com.atomi.loyalty.eventgateway.dto.output.*;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionFile;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
-import vn.com.atomi.loyalty.eventgateway.enums.ErrorCode;
-import vn.com.atomi.loyalty.eventgateway.enums.StatusCardTransaction;
+import vn.com.atomi.loyalty.eventgateway.enums.*;
+import vn.com.atomi.loyalty.eventgateway.feign.LoyaltyConfigClient;
+import vn.com.atomi.loyalty.eventgateway.feign.LoyaltyCoreClient;
 import vn.com.atomi.loyalty.eventgateway.repository.CardTransactionFileRepository;
 import vn.com.atomi.loyalty.eventgateway.repository.CardTransactionInfoRepository;
 import vn.com.atomi.loyalty.eventgateway.repository.CustomRepository;
 import vn.com.atomi.loyalty.eventgateway.service.CardTransactionService;
+import vn.com.atomi.loyalty.eventgateway.utils.Constants;
 import vn.com.atomi.loyalty.eventgateway.utils.Utils;
 
 @Slf4j
@@ -42,24 +51,26 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
   private final CardTransactionInfoRepository cardTransactionInfoRepository;
   private final CardTransactionFileRepository cardTransactionFileRepository;
   private final CustomRepository customRepository;
+  private final LoyaltyCoreClient loyaltyCoreClient;
+  private final LoyaltyConfigClient loyaltyConfigClient;
+  private final MessageInterceptor messageInterceptor;
   private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+  @Value("${custom.properties.kafka.topic.allocation-point-event.name}")
+  private String allocationPointTopic;
 
   public static boolean isCheckExcelFile(MultipartFile file) {
     String fileName = file.getName();
     return fileName.endsWith(".xls") || fileName.endsWith(".xlsx");
   }
 
-  /**
-   * Chia 2 luồng xử lý bất đồng bộ
-   *
-   * @param transactionFile
-   */
   @Override
   public void uploadTransactionFile(MultipartFile transactionFile) {
     /*Luồng 1 :  Khởi tạo bản ghi file transaction */
     String fileName = transactionFile.getOriginalFilename();
-    log.info("uploadTransactionFile {}", fileName);
-    CardTransactionFile cardTransactionFile = createCardTransactionFile(fileName);
+    CardTransactionFile cardTransactionFile = new CardTransactionFile();
+    cardTransactionFile.setName(fileName);
+    cardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZING);
     cardTransactionFile = cardTransactionFileRepository.save(cardTransactionFile);
 
     var context = ThreadContext.getContext();
@@ -105,8 +116,8 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
                 card.clear();
               }
             }
-            finalCardTransactionFile.setTotalRecordSuccessful(String.valueOf(totalSuccessful[0]));
-            finalCardTransactionFile.setTotalRecordFailed(String.valueOf(totalFailed[0]));
+            finalCardTransactionFile.setTotalRecordSuccessful(totalSuccessful[0]);
+            finalCardTransactionFile.setTotalRecordFailed(totalFailed[0]);
             finalCardTransactionFile.setTotalTransactionMoney(
                 String.valueOf(totalTransactionMoney));
             finalCardTransactionFile.setStatusCard(StatusCardTransaction.IN_PROGRESS);
@@ -201,6 +212,91 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
         page, super.modelMapper.convertToCardTransactionInfoOutPut(page.getContent()));
   }
 
+  @Override
+  public void confirmCardTransactionFile(Long id, boolean accept) {
+    cardTransactionFileRepository
+        .findByDeletedFalseAndId(id)
+        .ifPresentOrElse(
+            cardTransactionFile -> {
+              cardTransactionFile.setStatusCard(
+                  accept ? StatusCardTransaction.IN_PROGRESS : StatusCardTransaction.REJECT);
+              cardTransactionFileRepository.save(cardTransactionFile);
+              if (accept) {
+                var sourceMaps =
+                    loyaltyConfigClient
+                        .getAllSourceDataMap(
+                            ThreadContext.get(RequestConstant.REQUEST_ID), SourceGroup.CARD)
+                        .getData();
+                var productLines =
+                    loyaltyConfigClient
+                        .getProductLines(ThreadContext.get(RequestConstant.REQUEST_ID))
+                        .getData();
+                var context = ThreadContext.getContext();
+                threadPoolTaskExecutor.execute(
+                    () -> {
+                      ThreadContext.putAll(context);
+                      var totalPage = cardTransactionFile.getTotalRecordSuccessful() / 1000 + 1;
+                      for (int i = 0; i < totalPage; i++) {
+                        var page =
+                            cardTransactionInfoRepository
+                                .findByDeletedFalseAndCardTransactionFileId(
+                                    id, PageRequest.of(i, 1000));
+                        if (!page.getContent().isEmpty()) {
+                          for (CardTransactionInfo info : page) {
+                            var sourceMap =
+                                sourceMaps.stream()
+                                    .filter(
+                                        v ->
+                                            v.getSourceType()
+                                                    .equals(Constants.SourceType.PRODUCT_LINE)
+                                                && v.getSourceId().equals(info.getProductId()))
+                                    .findFirst()
+                                    .orElse(new SourceDataMapOutput());
+                            CustomerOutput customerOutput =
+                                loyaltyCoreClient
+                                    .getCustomer(
+                                        ThreadContext.get(RequestConstant.REQUEST_ID),
+                                        null,
+                                        info.getCif())
+                                    .getData();
+                            AllocationPointMessage allocationPointMessage =
+                                AllocationPointMessage.builder()
+                                    .transaction(
+                                        AllocationPointTransactionInput.builder()
+                                            .transactionAt(LocalDateTime.now())
+                                            .productLine(sourceMap.getDestinationCode())
+                                            .productType(
+                                                productLines.stream()
+                                                    .filter(
+                                                        v ->
+                                                            v.getLineCode()
+                                                                .equals(
+                                                                    sourceMap.getDestinationCode()))
+                                                    .findFirst()
+                                                    .orElse(new ProductLineOutput())
+                                                    .getProductType())
+                                            .refNo(info.getRefNo())
+                                            .amount(Long.parseLong(info.getTotalAmount()))
+                                            .build())
+                                    .type(RuleType.TRANSACTION)
+                                    .pointEventSource(PointEventSource.UPLOAD_CARD_TRANSACTION)
+                                    .customer(customerOutput)
+                                    .build();
+                            messageInterceptor.convertAndSend(
+                                allocationPointTopic,
+                                customerOutput.getId().toString(),
+                                new MessageData<>(allocationPointMessage));
+                          }
+                        }
+                      }
+                      cardTransactionFile.setStatusCard(StatusCardTransaction.COMPLETE);
+                      ThreadContext.clearAll();
+                    });
+              }
+            },
+            () -> {});
+  }
+
   private CardTransactionInfo createEntitiesFromRows(Map<Integer, String> mapIndex, Row row) {
     CardTransactionInfo cardTransactionInfo = new CardTransactionInfo();
 
@@ -226,13 +322,5 @@ public class CardTransactionServiceImpl extends BaseService implements CardTrans
     }
 
     return cardTransactionInfo;
-  }
-
-  private CardTransactionFile createCardTransactionFile(String fileName) {
-    CardTransactionFile cardTransactionFile = new CardTransactionFile();
-    cardTransactionFile.setName(fileName);
-    cardTransactionFile.setStatusCard(StatusCardTransaction.INITIALIZING);
-    cardTransactionFileRepository.save(cardTransactionFile);
-    return cardTransactionFile;
   }
 }

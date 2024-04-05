@@ -35,10 +35,10 @@ public class CardTransactionFile extends BaseEntity {
   private String name;
 
   @Column(name = "TOTAL_RECORD_SUCCESSFUL")
-  private String totalRecordSuccessful;
+  private int totalRecordSuccessful;
 
   @Column(name = "TOTAL_RECORD_FAILED")
-  private String totalRecordFailed;
+  private int totalRecordFailed;
 
   @Column(name = "TOTAL_TRANSACTION_MONEY")
   private String totalTransactionMoney;

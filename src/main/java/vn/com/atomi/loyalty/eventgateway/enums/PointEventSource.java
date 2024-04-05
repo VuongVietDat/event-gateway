@@ -4,7 +4,8 @@ package vn.com.atomi.loyalty.eventgateway.enums;
  * @author haidv
  * @version 1.0
  */
-public enum SourceGroup {
+public enum PointEventSource {
   LV24H,
-  CARD
+  UPLOAD_CARD_TRANSACTION,
+  ;
 }

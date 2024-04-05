@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.eventgateway.dto.message;
 
 import lombok.*;
 import vn.com.atomi.loyalty.eventgateway.dto.output.CustomerOutput;
+import vn.com.atomi.loyalty.eventgateway.enums.PointEventSource;
 import vn.com.atomi.loyalty.eventgateway.enums.RuleType;
 
 /**
@@ -20,4 +21,6 @@ public class AllocationPointMessage {
   private AllocationPointTransactionInput transaction;
 
   private RuleType type;
+
+  private PointEventSource pointEventSource;
 }

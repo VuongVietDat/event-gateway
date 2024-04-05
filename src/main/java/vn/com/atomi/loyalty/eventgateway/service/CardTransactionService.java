@@ -26,4 +26,6 @@ public interface CardTransactionService {
       String createdBy,
       String nameFile,
       Pageable pageable);
+
+  void confirmCardTransactionFile(Long id, boolean accept);
 }

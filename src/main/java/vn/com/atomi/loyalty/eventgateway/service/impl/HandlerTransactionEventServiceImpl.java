@@ -13,6 +13,7 @@ import vn.com.atomi.loyalty.eventgateway.dto.message.AllocationPointMessage;
 import vn.com.atomi.loyalty.eventgateway.dto.message.AllocationPointTransactionInput;
 import vn.com.atomi.loyalty.eventgateway.dto.message.Lv24HTransactionMessage;
 import vn.com.atomi.loyalty.eventgateway.dto.output.CustomerOutput;
+import vn.com.atomi.loyalty.eventgateway.enums.PointEventSource;
 import vn.com.atomi.loyalty.eventgateway.enums.RuleType;
 import vn.com.atomi.loyalty.eventgateway.enums.SourceGroup;
 import vn.com.atomi.loyalty.eventgateway.feign.LoyaltyConfigClient;
@@ -45,7 +46,8 @@ public class HandlerTransactionEventServiceImpl extends BaseService
         loyaltyCoreClient
             .getCustomer(
                 ThreadContext.get(RequestConstant.REQUEST_ID),
-                lv24HTransactionMessage.getTransactionFrom().getFromCustNo())
+                lv24HTransactionMessage.getTransactionFrom().getFromCustNo(),
+                null)
             .getData();
     AllocationPointMessage allocationPointMessage =
         AllocationPointMessage.builder()
@@ -60,7 +62,7 @@ public class HandlerTransactionEventServiceImpl extends BaseService
                             .getSourceDataMap(
                                 ThreadContext.get(RequestConstant.REQUEST_ID),
                                 lv24HTransactionMessage.getTransactionHeader().getProductId(),
-                                Constants.SOURCE_TYPE_TRANSACTION,
+                                Constants.SourceType.TRANSACTION,
                                 SourceGroup.LV24H)
                             .getData()
                             .getDestinationCode())
@@ -71,6 +73,7 @@ public class HandlerTransactionEventServiceImpl extends BaseService
                     .currency(lv24HTransactionMessage.getTransactionAmount().getAmountCurrency())
                     .build())
             .type(RuleType.TRANSACTION)
+            .pointEventSource(PointEventSource.LV24H)
             .customer(customerOutput)
             .build();
     messageInterceptor.convertAndSend(

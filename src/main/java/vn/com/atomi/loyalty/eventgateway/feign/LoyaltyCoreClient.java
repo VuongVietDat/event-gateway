@@ -21,5 +21,7 @@ public interface LoyaltyCoreClient {
   @Operation(summary = "Api (nội bộ) lấy chi tiết thành viên theo mã ví")
   @GetMapping("/internal/customers")
   ResponseData<CustomerOutput> getCustomer(
-      @RequestHeader(RequestConstant.REQUEST_ID) String requestId, @RequestParam String cifWallet);
+      @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
+      @RequestParam String cifWallet,
+      @RequestParam String cifBank);
 }

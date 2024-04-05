@@ -22,7 +22,7 @@ public class LoyaltyCoreClientFallbackFactory implements FallbackFactory<Loyalty
 
     return new LoyaltyCoreClient() {
       @Override
-      public ResponseData<CustomerOutput> getCustomer(String requestId, String cifWallet) {
+      public ResponseData<CustomerOutput> getCustomer(String requestId, String cifWallet, String cifBank) {
         throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
       }
     };

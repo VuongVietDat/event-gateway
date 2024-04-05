@@ -119,4 +119,13 @@ public class CardTransactionController extends BaseController {
             nameFile,
             super.pageable(pageNo, pageSize, sort)));
   }
+
+  @Operation(summary = "Api xác nhận file giao dịch thẻ")
+  @PreAuthorize(Authority.CardTransaction.UPLOAD_TRANSACTION_FILE)
+  @PutMapping("/card-transaction/file/{id}/confirm")
+  public ResponseEntity<ResponseData<Void>> confirmCardTransactionFile(
+      @Parameter(description = "Id bản ghi file transaction") @PathVariable Long id, @RequestParam boolean accept) {
+    cardTransactionService.confirmCardTransactionFile(id, accept);
+    return ResponseUtils.success();
+  }
 }
