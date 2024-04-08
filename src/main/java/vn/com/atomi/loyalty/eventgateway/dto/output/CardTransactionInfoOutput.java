@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
+import vn.com.atomi.loyalty.eventgateway.enums.Status;
 
 @Getter
 @Setter
@@ -73,4 +74,10 @@ public class CardTransactionInfoOutput {
 
   @Schema(description = "Người tạo")
   private String creator;
+
+  @Schema(description = "Trạng thái")
+  private Status status;
+
+  @Schema(description = "Số tham chiếu")
+  private String refNo;
 }
