@@ -33,9 +33,9 @@ public class CustomRepositoryImpl implements CustomRepository {
           .append("customer_name, product_id, card_rank, card_category, card_limit, ")
           .append("issue_organization, phone_number, total_transaction, total_amount, ")
           .append(
-              "maturity_doubt , card_transaction_file_id , is_deleted , ref_no) VALUES (GET_CTI_ID_SEQ(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,")
+              "maturity_doubt , card_transaction_file_id , is_deleted , status , ref_no) VALUES (GET_CTI_ID_SEQ(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,")
           .append(cardTransactionFileId)
-          .append(",'0',")
+          .append(",'0','0'")
           .append("'")
           .append(refNo)
           .append("'")

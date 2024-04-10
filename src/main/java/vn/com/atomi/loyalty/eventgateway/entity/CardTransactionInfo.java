@@ -2,6 +2,8 @@ package vn.com.atomi.loyalty.eventgateway.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
+import vn.com.atomi.loyalty.eventgateway.enums.Status;
 
 @Builder
 @Setter
@@ -75,4 +78,8 @@ public class CardTransactionInfo extends BaseEntity {
 
   @Column(name = "REF_NO")
   private String refNo;
+
+  @Column(name = "STATUS")
+  @Enumerated(EnumType.STRING)
+  private Status status;
 }
