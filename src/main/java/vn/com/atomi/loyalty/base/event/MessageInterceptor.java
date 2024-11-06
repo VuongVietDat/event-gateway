@@ -60,11 +60,16 @@ public class MessageInterceptor {
   public void convertAndSend(String queueName, String key, MessageData payload) {
     var payloadJson = JsonUtils.toJson(payload);
     LOGGER.info(
-        "Start push message to queue: {} messageId: {} with payload: {}",
-        queueName,
-        payload.getMessageId(),
-        payloadJson);
-    kafkaTemplate.send(queueName, key, payloadJson);
+            "Start push message to queue: {} messageId: {} with payload: {}",
+            queueName,
+            payload.getMessageId(),
+            payloadJson);
+    try {
+      kafkaTemplate.send(queueName, key, payloadJson).get();
+      LOGGER.info("Message sent successfully to queue: {} with messageId: {}", queueName, payload.getMessageId());
+    } catch (Exception ex) {
+      LOGGER.error("Failed to send message to queue: {} with messageId: {}", queueName, payload.getMessageId(), ex);
+    }
     LOGGER.info("End push message to queue: {} messageId: {}", queueName, payload.getMessageId());
   }
 
