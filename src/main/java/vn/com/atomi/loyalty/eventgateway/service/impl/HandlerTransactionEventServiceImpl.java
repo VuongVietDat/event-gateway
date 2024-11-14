@@ -46,7 +46,8 @@ public class HandlerTransactionEventServiceImpl extends BaseService
         loyaltyCoreClient
             .getCustomer(
                 ThreadContext.get(RequestConstant.REQUEST_ID),
-                lv24HTransactionMessage.getTransactionFrom().getFromCustNo(),
+                    "100020493",
+//                lv24HTransactionMessage.getTransactionFrom().getFromCustNo(),
                 null)
             .getData();
     AllocationPointMessage allocationPointMessage =
