@@ -30,42 +30,42 @@ public class Lv24HTransactionEventListener extends BaseRetriesMessageListener<Li
 
   private final HandlerTransactionEventService handlerTransactionEventService;
 
-  @RabbitListener(queues = "${custom.properties.rabbitmq.queue.lv24h-transaction-event.name}")
-  public void lv24hTransactionEvent(
-      String data,
-      @Header("amqp_consumerQueue") String queue,
-      @Header("timestamp") String timestamp) {
-    ThreadContext.put(RequestConstant.REQUEST_ID, Utils.generateUniqueId());
-    ThreadContext.put(RequestConstant.BROKER_TYPE, RequestConstant.BROKER_RABBIT);
-    ThreadContext.put(RequestConstant.MESSAGE_EVENT, queue);
-    LOGGER.info("[RabbitConsumer][{}][{}] Incoming: {}", queue, timestamp, data);
-    Lv24HTransactionMessage input = JsonUtils.fromJson(data, Lv24HTransactionMessage.class);
-    if (input == null) {
-      LOGGER.info("[RabbitConsumer][{}][{}]  ignore!", queue, timestamp);
-      ThreadContext.clearAll();
-      return;
-    }
-    var messageId =
-        String.format("%s_%s_%s", queue, timestamp, input.getTransactionHeader().getTransCode());
-    try {
-      if (Boolean.FALSE.equals(
-          super.historyMessageRepository.put(
-              new HistoryMessage(messageId, queue, RequestConstant.BROKER_RABBIT)))) {
-        LOGGER.warn("[RabbitConsumer][{}][{}]  message has been processed", queue, timestamp);
-        return;
-      }
-      handleMessageEvent(input);
-      LOGGER.info("[RabbitConsumer][{}][{}]  successful!", queue, timestamp);
-    } catch (Exception e) {
-      LOGGER.error("[RabbitConsumer][{}][{}]  Exception revert ", queue, timestamp, e);
-      var retryData = new MessageData<>(input);
-      retryData.updateMessageId(messageId);
-      super.messageInterceptor.convertAndSendRetriesEvent(
-          new RetriesMessageData(messageId, JsonUtils.toJson(retryData), queue, 300, 15));
-    } finally {
-      ThreadContext.clearAll();
-    }
-  }
+//  @RabbitListener(queues = "${custom.properties.rabbitmq.queue.lv24h-transaction-event.name}")
+//  public void lv24hTransactionEvent(
+//      String data,
+//      @Header("amqp_consumerQueue") String queue,
+//      @Header("timestamp") String timestamp) {
+//    ThreadContext.put(RequestConstant.REQUEST_ID, Utils.generateUniqueId());
+//    ThreadContext.put(RequestConstant.BROKER_TYPE, RequestConstant.BROKER_RABBIT);
+//    ThreadContext.put(RequestConstant.MESSAGE_EVENT, queue);
+//    LOGGER.info("[RabbitConsumer][{}][{}] Incoming: {}", queue, timestamp, data);
+//    Lv24HTransactionMessage input = JsonUtils.fromJson(data, Lv24HTransactionMessage.class);
+//    if (input == null) {
+//      LOGGER.info("[RabbitConsumer][{}][{}]  ignore!", queue, timestamp);
+//      ThreadContext.clearAll();
+//      return;
+//    }
+//    var messageId =
+//        String.format("%s_%s_%s", queue, timestamp, input.getTransactionHeader().getTransCode());
+//    try {
+//      if (Boolean.FALSE.equals(
+//          super.historyMessageRepository.put(
+//              new HistoryMessage(messageId, queue, RequestConstant.BROKER_RABBIT)))) {
+//        LOGGER.warn("[RabbitConsumer][{}][{}]  message has been processed", queue, timestamp);
+//        return;
+//      }
+//      handleMessageEvent(input);
+//      LOGGER.info("[RabbitConsumer][{}][{}]  successful!", queue, timestamp);
+//    } catch (Exception e) {
+//      LOGGER.error("[RabbitConsumer][{}][{}]  Exception revert ", queue, timestamp, e);
+//      var retryData = new MessageData<>(input);
+//      retryData.updateMessageId(messageId);
+//      super.messageInterceptor.convertAndSendRetriesEvent(
+//          new RetriesMessageData(messageId, JsonUtils.toJson(retryData), queue, 300, 15));
+//    } finally {
+//      ThreadContext.clearAll();
+//    }
+//  }
 
   @KafkaListener(
       topics = "${custom.properties.kafka.topic.lv24h-transaction-event-retries.name}",
