@@ -19,6 +19,10 @@ public class Constants {
     public static final String TRANSACTION = "TRANSACTION";
     public static final String PRODUCT_LINE = "PRODUCT_LINE";
   }
+  public static class NotificationErrorCode {
+    public static final String SUCCESS = "0";
+    public static final String TIMEOUT = "-1";
+  }
 
   private Constants() {
     throw new IllegalStateException("Utility class");

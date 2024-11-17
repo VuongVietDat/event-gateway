@@ -35,4 +35,7 @@ public class Authority {
     public static final String DETAIL_TRANSACTION_INFO = "hasAuthority('DETAIL_TRANSACTION_INFO')";
     public static final String LIST_TRANSACTION_FILE = "hasAuthority('LIST_TRANSACTION_FILE')";
   }
+  public static class Notification {
+    public static final String SEND_NOTIFICATION = "hasAuthority('SEND_NOTIFICATION')";
+  }
 }
