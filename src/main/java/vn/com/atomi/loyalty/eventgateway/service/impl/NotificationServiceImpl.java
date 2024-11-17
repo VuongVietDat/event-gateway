@@ -1,31 +1,34 @@
 package vn.com.atomi.loyalty.eventgateway.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.transport.http.HTTPConstants;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import vn.com.atomi.loyalty.base.data.BaseService;
-import vn.com.atomi.loyalty.base.data.ResponseData;
-import vn.com.atomi.loyalty.base.data.ResponseUtils;
 import vn.com.atomi.loyalty.eventgateway.dto.input.NotificationInput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.NotificationOutput;
 import vn.com.atomi.loyalty.eventgateway.service.NotificationService;
 import vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub;
 import vn.com.atomi.loyalty.eventgateway.utils.Constants;
 
-import java.net.URL;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl extends BaseService implements NotificationService {
 
-  private final String serviceEndpoint = "${custom.properties.notification.service-url}";
-  private final long overralTimeout = Long.parseLong("${custom.properties.notification.overal-timeout}");
-  private final String connectionTimeout = "${custom.properties.notification.connection-timeout}";
-  private final String socketTimeout = "${custom.properties.notification.socket-timeout}";
+  @Value("${custom.properties.notification.service-url}")
+  private String serviceEndpoint;
+
+  @Value("${custom.properties.notification.overal-timeout}")
+  private long overralTimeout;
+
+  @Value("${custom.properties.notification.connection-timeout}")
+  private String connectionTimeout;
+
+  @Value("${custom.properties.notification.socket-timeout}")
+  private String socketTimeout;
 
   private static NotificationServiceStub notificationStub = null;
   @Override
