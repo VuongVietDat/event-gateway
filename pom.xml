@@ -237,7 +237,11 @@
       <artifactId>axis2-jaxws</artifactId>
       <version>1.6.1</version>
     </dependency>
-
+    <dependency>
+      <groupId>commons-discovery</groupId>
+      <artifactId>commons-discovery</artifactId>
+      <version>0.5</version>
+    </dependency>
   </dependencies>
   <dependencyManagement>
     <dependencies>

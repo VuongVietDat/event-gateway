@@ -5,7 +5,7 @@
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.6.1  Built on : Aug 31, 2011 (12:22:40 CEST)
  */
-        package vn.com.atomi.loyalty.eventgateway.service;
+        package vn.com.atomi.loyalty.soapservice;
 
         
 
@@ -132,16 +132,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see vn.com.atomi.loyalty.eventgateway.service.NotificationService#receiveNotification
-                     * @param receiveNotification0
+                     * @see vn.com.atomi.loyalty.soapservice.NotificationService#receiveNotification
+                     * @param receiveNotification
                     
                      */
 
                     
 
-                            public  vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse receiveNotification(
+                            public  vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotificationResponse receiveNotification(
 
-                            vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification receiveNotification0)
+                            vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotification receiveNotification)
                         
 
                     throws java.rmi.RemoteException
@@ -168,7 +168,7 @@
                     
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
-                                                    receiveNotification0,
+                                                    receiveNotification,
                                                     optimizeContent(new javax.xml.namespace.QName("http://process.notification.ewallet.lpb.com",
                                                     "receiveNotification")), new javax.xml.namespace.QName("http://process.notification.ewallet.lpb.com",
                                                     "receiveNotification"));
@@ -192,11 +192,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse.class,
+                                             vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotificationResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse)object;
+                                        return (vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotificationResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -250,152 +250,6 @@
             }
         }
             
-                /**
-                * Auto generated method signature for Asynchronous Invocations
-                * 
-                * @see vn.com.atomi.loyalty.eventgateway.service.NotificationService#startreceiveNotification
-                    * @param receiveNotification0
-                
-                */
-                public  void startreceiveNotification(
-
-                 vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification receiveNotification0,
-
-                  final vn.com.atomi.loyalty.eventgateway.service.NotificationServiceCallbackHandler callback)
-
-                throws java.rmi.RemoteException{
-
-              org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[0].getName());
-             _operationClient.getOptions().setAction("urn:receiveNotification");
-             _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
-
-              
-              
-                  addPropertyToOperationClient(_operationClient,org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR,"&");
-              
-
-
-              // create SOAP envelope with that payload
-              org.apache.axiom.soap.SOAPEnvelope env=null;
-              final org.apache.axis2.context.MessageContext _messageContext = new org.apache.axis2.context.MessageContext();
-
-                    
-                                    //Style is Doc.
-                                    
-                                                    
-                                                    env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
-                                                    receiveNotification0,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://process.notification.ewallet.lpb.com",
-                                                    "receiveNotification")), new javax.xml.namespace.QName("http://process.notification.ewallet.lpb.com",
-                                                    "receiveNotification"));
-                                                
-        // adding SOAP soap_headers
-         _serviceClient.addHeadersToEnvelope(env);
-        // create message context with that soap envelope
-        _messageContext.setEnvelope(env);
-
-        // add the message context to the operation client
-        _operationClient.addMessageContext(_messageContext);
-
-
-                    
-                        _operationClient.setCallback(new org.apache.axis2.client.async.AxisCallback() {
-                            public void onMessage(org.apache.axis2.context.MessageContext resultContext) {
-                            try {
-                                org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
-                                
-                                        java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse.class,
-                                                                         getEnvelopeNamespaces(resultEnv));
-                                        callback.receiveResultreceiveNotification(
-                                        (vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse)object);
-                                        
-                            } catch (org.apache.axis2.AxisFault e) {
-                                callback.receiveErrorreceiveNotification(e);
-                            }
-                            }
-
-                            public void onError(java.lang.Exception error) {
-								if (error instanceof org.apache.axis2.AxisFault) {
-									org.apache.axis2.AxisFault f = (org.apache.axis2.AxisFault) error;
-									org.apache.axiom.om.OMElement faultElt = f.getDetail();
-									if (faultElt!=null){
-										if (faultExceptionNameMap.containsKey(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(),"receiveNotification"))){
-											//make the fault by reflection
-											try{
-													java.lang.String exceptionClassName = (java.lang.String)faultExceptionClassNameMap.get(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(),"receiveNotification"));
-													java.lang.Class exceptionClass = java.lang.Class.forName(exceptionClassName);
-													java.lang.Exception ex = (java.lang.Exception) exceptionClass.newInstance();
-													//message class
-													java.lang.String messageClassName = (java.lang.String)faultMessageMap.get(new org.apache.axis2.client.FaultMapKey(faultElt.getQName(),"receiveNotification"));
-														java.lang.Class messageClass = java.lang.Class.forName(messageClassName);
-													java.lang.Object messageObject = fromOM(faultElt,messageClass,null);
-													java.lang.reflect.Method m = exceptionClass.getMethod("setFaultMessage",
-															new java.lang.Class[]{messageClass});
-													m.invoke(ex,new java.lang.Object[]{messageObject});
-													
-					
-										            callback.receiveErrorreceiveNotification(new java.rmi.RemoteException(ex.getMessage(), ex));
-                                            } catch(java.lang.ClassCastException e){
-                                                // we cannot intantiate the class - throw the original Axis fault
-                                                callback.receiveErrorreceiveNotification(f);
-                                            } catch (java.lang.ClassNotFoundException e) {
-                                                // we cannot intantiate the class - throw the original Axis fault
-                                                callback.receiveErrorreceiveNotification(f);
-                                            } catch (java.lang.NoSuchMethodException e) {
-                                                // we cannot intantiate the class - throw the original Axis fault
-                                                callback.receiveErrorreceiveNotification(f);
-                                            } catch (java.lang.reflect.InvocationTargetException e) {
-                                                // we cannot intantiate the class - throw the original Axis fault
-                                                callback.receiveErrorreceiveNotification(f);
-                                            } catch (java.lang.IllegalAccessException e) {
-                                                // we cannot intantiate the class - throw the original Axis fault
-                                                callback.receiveErrorreceiveNotification(f);
-                                            } catch (java.lang.InstantiationException e) {
-                                                // we cannot intantiate the class - throw the original Axis fault
-                                                callback.receiveErrorreceiveNotification(f);
-                                            } catch (org.apache.axis2.AxisFault e) {
-                                                // we cannot intantiate the class - throw the original Axis fault
-                                                callback.receiveErrorreceiveNotification(f);
-                                            }
-									    } else {
-										    callback.receiveErrorreceiveNotification(f);
-									    }
-									} else {
-									    callback.receiveErrorreceiveNotification(f);
-									}
-								} else {
-								    callback.receiveErrorreceiveNotification(error);
-								}
-                            }
-
-                            public void onFault(org.apache.axis2.context.MessageContext faultContext) {
-                                org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils.getInboundFaultFromMessageContext(faultContext);
-                                onError(fault);
-                            }
-
-                            public void onComplete() {
-                                try {
-                                    _messageContext.getTransportOut().getSender().cleanup(_messageContext);
-                                } catch (org.apache.axis2.AxisFault axisFault) {
-                                    callback.receiveErrorreceiveNotification(axisFault);
-                                }
-                            }
-                });
-                        
-
-          org.apache.axis2.util.CallbackReceiver _callbackReceiver = null;
-        if ( _operations[0].getMessageReceiver()==null &&  _operationClient.getOptions().isUseSeparateListener()) {
-           _callbackReceiver = new org.apache.axis2.util.CallbackReceiver();
-          _operations[0].setMessageReceiver(
-                    _callbackReceiver);
-        }
-
-           //execute the operation client
-           _operationClient.execute(false);
-
-                    }
-                
 
 
        /**
@@ -9534,12 +9388,12 @@
         }
            
     
-            private  org.apache.axiom.om.OMElement  toOM(vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotification param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification.MY_QNAME,
+                             return param.getOMElement(vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotification.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -9548,12 +9402,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotificationResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse.MY_QNAME,
+                             return param.getOMElement(vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotificationResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -9563,14 +9417,14 @@
             }
         
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification param, boolean optimizeContent, javax.xml.namespace.QName methodQName)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotification param, boolean optimizeContent, javax.xml.namespace.QName methodQName)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotification.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -9600,16 +9454,16 @@
 
         try {
         
-                if (vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification.class.equals(type)){
+                if (vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotification.class.equals(type)){
                 
-                           return vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotification.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotification.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse.class.equals(type)){
+                if (vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotificationResponse.class.equals(type)){
                 
-                           return vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub.ReceiveNotificationResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return vn.com.atomi.loyalty.soapservice.NotificationServiceStub.ReceiveNotificationResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }

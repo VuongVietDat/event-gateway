@@ -10,8 +10,8 @@ import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.eventgateway.dto.input.NotificationInput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.NotificationOutput;
 import vn.com.atomi.loyalty.eventgateway.service.NotificationService;
-import vn.com.atomi.loyalty.eventgateway.service.NotificationServiceStub;
 import vn.com.atomi.loyalty.eventgateway.utils.Constants;
+import vn.com.atomi.loyalty.soapservice.NotificationServiceStub;
 
 @Slf4j
 @Service
@@ -22,13 +22,13 @@ public class NotificationServiceImpl extends BaseService implements Notification
   private String serviceEndpoint;
 
   @Value("${custom.properties.notification.overal-timeout}")
-  private long overralTimeout;
+  private Integer overralTimeout;
 
   @Value("${custom.properties.notification.connection-timeout}")
-  private String connectionTimeout;
+  private Integer connectionTimeout;
 
   @Value("${custom.properties.notification.socket-timeout}")
-  private String socketTimeout;
+  private Integer socketTimeout;
 
   private static NotificationServiceStub notificationStub = null;
   @Override
