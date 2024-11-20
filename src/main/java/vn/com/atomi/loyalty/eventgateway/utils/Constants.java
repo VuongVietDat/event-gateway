@@ -24,6 +24,8 @@ public class Constants {
     public static final String TIMEOUT = "-1";
   }
 
+  public static final String SYSTEM_LOYALTY = "LOYALTY";
+
   private Constants() {
     throw new IllegalStateException("Utility class");
   }

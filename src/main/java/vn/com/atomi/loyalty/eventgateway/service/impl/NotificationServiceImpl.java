@@ -62,6 +62,7 @@ public class NotificationServiceImpl extends BaseService implements Notification
     try {
       NotificationServiceStub.Header2 requestHeader = new NotificationServiceStub.Header2();
       requestHeader.setLanguage(request.getLanguage());
+      requestHeader.setChannelCode(Constants.SYSTEM_LOYALTY);
       requestHeader.setClientTime(request.getClientTime());
       requestHeader.setClientTime(request.getClientTime());
       requestHeader.setRequestId(request.getRequestId());
