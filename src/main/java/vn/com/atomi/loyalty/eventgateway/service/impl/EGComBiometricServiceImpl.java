@@ -27,4 +27,15 @@ public class EGComBiometricServiceImpl extends BaseService implements EGComBiome
         var EGCBiometricsOutput = super.modelMapper.convertToEGCBiometricOutput(lstEGCBiometrics);
         return EGCBiometricsOutput;
     }
+
+    public void updateEGComBioMetric(String cifBank)
+    {
+        EGCompleteBiometric egCompleteBiometric = egComBiometricRepository.findByCifBank(cifBank);
+
+        if(egCompleteBiometric != null)
+        {
+            egCompleteBiometric.setIsPlusPoint(true);
+            egComBiometricRepository.save(egCompleteBiometric);
+        }
+    }
 }

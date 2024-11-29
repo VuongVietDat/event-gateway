@@ -12,6 +12,8 @@ public interface EGComBiometricRepository extends JpaRepository<EGCompleteBiomet
 
     Optional<EGCompleteBiometric> findById(Integer id);
 
+    EGCompleteBiometric findByCifBank(String cifBank);
+
     List<EGCompleteBiometric> findByDeletedFalseAndIsPlusPointFalse();
 
 }

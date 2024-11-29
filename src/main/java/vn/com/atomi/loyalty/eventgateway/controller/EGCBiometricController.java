@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
@@ -52,5 +49,22 @@ public class EGCBiometricController extends BaseController {
             @RequestParam(required = false)
             String endDate) {
         return ResponseUtils.success(egComBiometricService.getListEGComBiometrics());
+    }
+
+    @Operation(
+            summary = "Api (nội bộ) tự động chuyển trạng thái đã cộng điểm hoàn thành sinh trắc học cho khách hàng")
+    @PreAuthorize(Authority.ROLE_SYSTEM)
+    @PutMapping("/internal/completebiometric/update")
+    public ResponseEntity<ResponseData<Void>> automaticupdate(
+            @Parameter(
+                    description = "Chuỗi xác thực khi gọi api nội bộ",
+                    example = "eb6b9f6fb84a45d9c9b2ac5b2c5bac4f36606b13abcb9e2de01fa4f066968cd0")
+            @RequestHeader(RequestConstant.SECURE_API_KEY)
+            @SuppressWarnings("unused")
+            String apiKey,
+            @Parameter(description = "CifBank của khách hàng")
+            @RequestParam String cifBank) {
+        egComBiometricService.updateEGComBioMetric(cifBank);
+        return ResponseUtils.success();
     }
 }
