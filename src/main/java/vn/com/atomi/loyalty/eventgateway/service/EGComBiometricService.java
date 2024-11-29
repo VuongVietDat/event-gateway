@@ -7,6 +7,4 @@ import java.util.List;
 public interface EGComBiometricService {
 
     List<EGCBiometricOutput> getListEGComBiometrics();
-
-    void updatePlusPoint(Integer id);
 }

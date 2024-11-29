@@ -21,4 +21,6 @@ public class EGCBiometricOutput {
 
     private Date completeAt;
 
+    private Boolean isPlusPoint;
+
 }

@@ -53,6 +53,6 @@ public class EGCompleteBiometric extends BaseEntity {
     private Date completeAt;
 
     @Column(name = "IS_PLUS_POINT")
-    private boolean isPlusPoint;
+    private Boolean isPlusPoint;
 
 }

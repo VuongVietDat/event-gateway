@@ -22,14 +22,9 @@ public class EGComBiometricServiceImpl extends BaseService implements EGComBiome
     @Override
     public List<EGCBiometricOutput> getListEGComBiometrics()
     {
-       List<EGCompleteBiometric> lstEGCBiometrics = egComBiometricRepository.findByDeletedFalseAndPlusPointFalse();
+       List<EGCompleteBiometric> lstEGCBiometrics = egComBiometricRepository.findByDeletedFalseAndIsPlusPointFalse();
 
         var EGCBiometricsOutput = super.modelMapper.convertToEGCBiometricOutput(lstEGCBiometrics);
         return EGCBiometricsOutput;
-    }
-
-    @Override
-    public void updatePlusPoint(Integer id)
-    {
     }
 }
