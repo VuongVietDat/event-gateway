@@ -5,6 +5,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -31,11 +33,11 @@ public abstract class BaseEntity implements Serializable {
 
   @CreatedDate
   @Column(name = "CREATED_AT")
-  private LocalDateTime createdAt;
+  private Date createdAt;
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  private LocalDateTime updatedAt;
+  private Date updatedAt;
 
   @CreatedBy
   @Column(name = "CREATED_BY")
