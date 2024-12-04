@@ -7,6 +7,8 @@ import vn.com.atomi.loyalty.eventgateway.dto.input.CardTransactionInfoInput;
 import vn.com.atomi.loyalty.eventgateway.dto.output.*;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionFile;
 import vn.com.atomi.loyalty.eventgateway.entity.CardTransactionInfo;
+import vn.com.atomi.loyalty.eventgateway.entity.EGCompleteBiometric;
+import vn.com.atomi.loyalty.eventgateway.entity.EGLogin;
 import vn.com.atomi.loyalty.eventgateway.enums.ApprovalStatus;
 
 /**
@@ -50,6 +52,10 @@ public interface ModelMapper {
 
   List<CardTransactionFileOutput> convertToCardTransactionInfoOutPut(
       List<CardTransactionFile> content);
+
+  List<EGCBiometricOutput> convertToEGCBiometricOutput(List<EGCompleteBiometric> egCompleteBiometrics);
+
+  List<EGLoginOutput> convertToEGLoginOutput(List<EGLogin> egLogins);
 
   void updateCardTransactionInfo(
       CardTransactionInfoInput input, @MappingTarget CardTransactionInfo output);
